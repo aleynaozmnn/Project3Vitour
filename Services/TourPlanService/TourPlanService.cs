@@ -1,0 +1,56 @@
+﻿using AutoMapper;
+using MongoDB.Driver;
+using Project3Vitour.Dtos.TourPlanDto;
+using Project3Vitour.Entities;
+using Project3Vitour.Services.TourPlanServices;
+using Project3Vitour.Settings;
+
+namespace Project3Vitour.Services.TourPlanService
+{
+    public class TourPlanService : ITourPlanService
+    {
+        private readonly IMongoCollection<TourPlan> _tourPlanCollection;
+        private readonly IMapper _mapper;
+
+        public TourPlanService(IMapper mapper,IDatabaseSettings databaseSettings)
+        {
+            var client=new MongoClient(databaseSettings.ConnectionString);
+            var database = client.GetDatabase(databaseSettings.DatabaseName);
+            // _tourPlanCollection = database.GetCollection<TourPlan>(databaseSettings.TourPlanCollectionName);
+            _tourPlanCollection = database.GetCollection<TourPlan>("TourPlans");
+            _mapper = mapper;
+        }
+
+        public async Task<List<GetTourPlanDto>> GetTourPlanByTourIdAsync(string tourId)
+        {
+            var values = await _tourPlanCollection
+                .Find(x => x.TourId == tourId)
+                .ToListAsync();
+            return _mapper.Map<List<GetTourPlanDto>>(values);
+        }
+        public async Task CreateTourPlanAsync(CreateTourPlanDto createTourPlanDto)
+        {
+            var value = _mapper.Map<TourPlan>(createTourPlanDto);
+            await _tourPlanCollection.InsertOneAsync(value);
+        }
+
+        public async Task DeleteTourPlanAsync(string id)
+        {
+            await _tourPlanCollection.DeleteOneAsync(x => x.TourPlanId == id);
+        }
+        public async Task UpdateTourPlanAsync(UpdateTourPlanDto updateTourPlanDto)
+        {
+            var value = _mapper.Map<TourPlan>(updateTourPlanDto);
+            // MongoDB'de TourPlanId'si eşleşen dökümanı yeni "value" ile değiştiriyoruz.
+            await _tourPlanCollection.FindOneAndReplaceAsync(x => x.TourPlanId == updateTourPlanDto.TourPlanId, value);
+        }
+
+        public async Task<UpdateTourPlanDto> GetByIdTourPlanAsync(string id)
+        {
+            var value = await _tourPlanCollection.Find(x => x.TourPlanId == id).FirstOrDefaultAsync();
+            return _mapper.Map<UpdateTourPlanDto>(value);
+        }
+
+
+    }
+}

@@ -1,0 +1,178 @@
+﻿@model Project3Vitour.Dtos.TourDto.CreateTourDto
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-soft: rgba(99, 102, 241, 0.1);
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--bg);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .page-header-box {
+        background: white;
+        border-radius: 24px;
+        padding: 32px;
+        margin-bottom: 32px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+
+    .header-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: var(--primary-soft);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.6rem;
+        margin-right: 20px;
+    }
+
+    .glass-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 32px;
+    }
+
+    .form-label {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .modern-input {
+        background: #f1f5f9;
+        border: 2px solid transparent;
+        border-radius: 14px;
+        padding: 14px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+        .modern-input:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-soft);
+            outline: none;
+        }
+
+    .btn-save {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 16px;
+        padding: 16px;
+        font-weight: 700;
+        transition: 0.3s;
+        box-shadow: 0 10px 15px rgba(99, 102, 241, 0.2);
+    }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+</style>
+
+<div class="container py-4">
+    <div class="page-header-box d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <div class="header-icon-wrapper"><i class="bi bi-map"></i></div>
+            <div>
+                <h1 style="font-weight: 800; font-size: 1.8rem; margin:0;">Yeni Tur Paketi</h1>
+                <p class="text-muted m-0">Süre ve kontenjan dahil tüm detayları buradan yönetin.</p>
+            </div>
+        </div>
+        <a href="/AdminTour/TourList" class="btn btn-light px-4" style="border-radius:12px; font-weight:600;">Vazgeç</a>
+    </div>
+
+    <form asp-action="CreateTour" method="post">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="glass-card shadow-sm">
+                    <div class="mb-4">
+                        <label class="form-label">Tur Başlığı</label>
+                        <input type="text" asp-for="Title" class="form-control modern-input" placeholder="Turun adını giriniz..." required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control modern-input" rows="5" placeholder="Tur içeriğini buraya yazın..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Tur Süresi (Gün)</label>
+                            <input type="number" asp-for="DayCount" class="form-control modern-input" placeholder="Örn: 5">
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Kontenjan</label>
+                            <input type="number" asp-for="Capacity" class="form-control modern-input" placeholder="Örn: 24">
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Fiyat (₺)</label>
+                            <input type="number" asp-for="Price" class="form-control modern-input" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="glass-card shadow-sm mb-4">
+                    <div class="mb-4">
+                        <label class="form-label">Kapak Görseli URL</label>
+                        <input type="text" asp-for="CoverImageUrl" class="form-control modern-input" placeholder="https://...">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Tur Kategorisi</label>
+                        <select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-select modern-input" required>
+                            <option value="" disabled selected>Kategori Seçiniz...</option>
+                        </select>
+                    </div>
+
+                    <select asp-for="Badge" class="form-select">
+                        <option value="">Rozet Seçiniz...</option>
+                        <option value="Yurt İçi">Yurt İçi</option>
+                        <option value="Yurt Dışı">Yurt Dışı</option>
+                        <option value="Fırsat Turu">Fırsat Turu</option>
+                        <option value="Tükendi">Tükendi</option>
+                    </select>
+
+                    <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-4 mb-4">
+                        <div>
+                            <div class="fw-bold small">Tur Durumu</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">Sitede yayınlansın mı?</div>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" asp-for="IsStatus" style="transform: scale(1.2); cursor:pointer;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-save w-100">Turu Kaydet ve Yayınla</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,50 @@
+﻿@model Project3Vitour.Dtos.DestinationDtos.GetDestinationByIdDto
+@{
+    ViewData["Title"] = "Rotayı Düzenle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="m-0 fw-bold text-primary"><i class="bi bi-pencil-square me-2"></i>Rotayı Güncelle</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                @* ID'yi gizli gönderiyoruz ki sistem hangi kaydı güncelleyeceğini bilsin *@
+                <input type="hidden" asp-for="DestinationId" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Şehir</label>
+                        <input type="text" asp-for="City" class="form-control rounded-3">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Ülke</label>
+                        <input type="text" asp-for="Country" class="form-control rounded-3">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Fiyat</label>
+                        <input type="number" asp-for="Price" class="form-control rounded-3">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Kapasite</label>
+                        <input type="number" asp-for="Capacity" class="form-control rounded-3">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Süre</label>
+                        <input type="text" asp-for="DayNight" class="form-control rounded-3">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Görsel URL</label>
+                        <input type="text" asp-for="ImageUrl" class="form-control rounded-3">
+                    </div>
+                    <div class="col-12 mt-4 text-end">
+                        <a href="/Destination/Index" class="btn btn-light px-4 me-2 rounded-3">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold rounded-3">Değişiklikleri Uygula</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

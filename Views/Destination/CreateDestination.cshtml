@@ -1,0 +1,119 @@
+﻿@model Project3Vitour.Dtos.DestinationDtos.CreateDestinationDto
+@{
+    ViewData["Title"] = "Yeni Rota Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row">
+        @* SOL TARAF: FORM GİRİŞİ *@
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="m-0 fw-bold text-primary"><i class="bi bi-pencil-square me-2"></i>Rota Detayları</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Şehir</label>
+                                <input type="text" asp-for="City" id="cityInput" class="form-control bg-light border-0 py-2" placeholder="Örn: Roma">
+                                <span asp-validation-for="City" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Ülke</label>
+                                <input type="text" asp-for="Country" id="countryInput" class="form-control bg-light border-0 py-2" placeholder="Örn: İtalya">
+                                <span asp-validation-for="Country" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Fiyat ($)</label>
+                                <input type="number" asp-for="Price" id="priceInput" class="form-control bg-light border-0 py-2">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Kapasite</label>
+                                <input type="number" asp-for="Capacity" id="capacityInput" class="form-control bg-light border-0 py-2">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-uppercase">Süre (Gün/Gece)</label>
+                                <input type="text" asp-for="DayNight" id="dayNightInput" class="form-control bg-light border-0 py-2" placeholder="3 Gün 2 Gece">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-uppercase">Görsel URL</label>
+                                <input type="text" asp-for="ImageUrl" id="imageUrlInput" class="form-control bg-light border-0 py-2" placeholder="https://...">
+                                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-3 shadow-sm">
+                                    <i class="bi bi-save me-2"></i>Rotayı Kaydet
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @* SAĞ TARAF: CANLI KART ÖNİZLEMESİ *@
+        <div class="col-lg-5">
+            <div class="sticky-top" style="top: 20px; z-index: 1;">
+                <h6 class="text-muted fw-bold mb-3 text-uppercase small"><i class="bi bi-eye me-2"></i>Canlı Önizleme</h6>
+
+                @* Vitour Kart Tasarımı *@
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 400px;">
+                    <div class="position-relative">
+                        <img id="previewImg" src="https://via.placeholder.com/400x250?text=Görsel+Bekleniyor" class="card-img-top" style="height: 250px; object-fit: cover;">
+                        <span class="position-absolute top-0 start-0 m-3 badge rounded-pill bg-primary px-3 py-2 shadow" id="previewPrice">$0</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title fw-bold mb-0 text-dark" id="previewCity">Şehir Adı</h5>
+                            <small class="text-primary fw-bold" id="previewDayNight">Süre Bekleniyor</small>
+                        </div>
+                        <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i><span id="previewCountry">Ülke</span></p>
+                        <hr class="text-muted opacity-25">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted small">
+                                <i class="bi bi-people-fill me-1"></i> <span id="previewCapacity">0</span> Kişi Kapasite
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 disabled">Detaylar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3 rounded-3 small border-0 shadow-sm">
+                    <i class="bi bi-info-circle me-2"></i> Bilgileri girdikçe kart otomatik olarak güncellenir.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Fonksiyon: Tüm alanları güncelle
+            function updatePreview() {
+                $("#previewCity").text($("#cityInput").val() || "Şehir Adı");
+                $("#previewCountry").text($("#countryInput").val() || "Ülke");
+                $("#previewPrice").text("$" + ($("#priceInput").val() || "0"));
+                $("#previewDayNight").text($("#dayNightInput").val() || "Süre Bekleniyor");
+                $("#previewCapacity").text($("#capacityInput").val() || "0");
+
+                var url = $("#imageUrlInput").val();
+                if (url && url.trim() !== "") {
+                    $("#previewImg").attr("src", url);
+                } else {
+                    $("#previewImg").attr("src", "https://via.placeholder.com/400x250?text=Görsel+Bekleniyor");
+                }
+            }
+
+            // Inputlara her yazıldığında tetikle
+            $("#cityInput, #countryInput, #priceInput, #dayNightInput, #capacityInput, #imageUrlInput").on("input change", updatePreview);
+
+            // Sayfa yüklendiğinde bir kere çalıştır
+            updatePreview();
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+}

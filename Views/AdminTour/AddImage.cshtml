@@ -1,0 +1,171 @@
+﻿@model Project3Vitour.Dtos.TourDto.CreateTourImageDto
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --ink: #0f172a;
+        --ink-60: #64748b;
+        --accent: #2563eb;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --radius-lg: 18px;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        background-color: #f8fafc !important;
+    }
+
+    .ap-form-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        max-width: 700px;
+        margin: 40px auto;
+        overflow: hidden;
+    }
+
+    .ap-card-header {
+        padding: 32px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(to right, #ffffff, #f8fafc);
+    }
+
+    .ap-card-body {
+        padding: 32px;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 14px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .form-control {
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        transition: all 0.2s;
+        font-size: 14px;
+    }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+    .preview-box {
+        margin-top: 20px;
+        border: 2px dashed var(--border);
+        border-radius: 14px;
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #f1f5f9;
+    }
+
+    .preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
+
+    .btn-save {
+        background: var(--accent);
+        color: white;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        transition: 0.3s;
+        width: 100%;
+    }
+
+        .btn-save:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+</style>
+
+<div class="container">
+    <div class="ap-form-card">
+        <div class="ap-card-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 48px; height: 48px; background: rgba(37,99,235,0.1); color: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <i class="bi bi-images"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-weight: 800; color: var(--ink);">Galeriye Fotoğraf Ekle</h4>
+                    <p style="margin: 0; font-size: 13px; color: var(--ink-60);">Tur detay sayfasındaki "Shot Gallery" alanında görünecektir.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-card-body">
+            <form method="post">
+                @* Gizli TourId alanı *@
+                <input type="hidden" asp-for="TourId" value="@ViewBag.v" />
+
+                <div class="mb-4">
+                    <label class="form-label">Görsel URL Adresi</label>
+                    <input type="text" asp-for="ImageUrl" id="urlInput" class="form-control" placeholder="https://resimlinki.com/tur-gorseli.jpg" required />
+                    <small style="color: var(--ink-60); display: block; margin-top: 8px;">
+                        <i class="bi bi-info-circle"></i> Google Drive, Unsplash veya kendi sunucunuzdan bir link yapıştırın.
+                    </small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Görsel Önizleme</label>
+                    <div class="preview-box" id="previewBox">
+                        <i class="bi bi-image" id="placeholderIcon" style="font-size: 48px; color: #cbd5e1;"></i>
+                        <img src="" id="imagePreview" class="preview-img" />
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 32px;">
+                    <a href="/AdminTour/TourList" style="flex: 1; text-align: center; padding: 14px; border-radius: 12px; border: 1px solid var(--border); text-decoration: none; color: var(--ink-60); font-weight: 700; transition: 0.2s;">
+                        Vazgeç
+                    </a>
+                    <button type="submit" class="btn-save" style="flex: 2;">
+                        <i class="bi bi-cloud-arrow-up-fill"></i> Görseli Galeriye Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Link yapıştırıldığında anlık önizleme gösteren küçük JS kodu
+        const urlInput = document.getElementById('urlInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const placeholderIcon = document.getElementById('placeholderIcon');
+
+        urlInput.addEventListener('input', function() {
+            const url = this.value;
+            if(url && url.startsWith('http')) {
+                imagePreview.src = url;
+                imagePreview.style.display = 'block';
+                placeholderIcon.style.display = 'none';
+            } else {
+                imagePreview.style.display = 'none';
+                placeholderIcon.style.display = 'block';
+            }
+        });
+    </script>
+}

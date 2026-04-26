@@ -1,0 +1,139 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Project3Vitour.Dtos.ReservationDto;
+using Project3Vitour.Dtos.TourDto;
+using Project3Vitour.Models;
+using Project3Vitour.Services.CategoryServices;
+using Project3Vitour.Services.ImageService;
+using Project3Vitour.Services.ReservationService;
+using Project3Vitour.Services.ReviewServices;
+using Project3Vitour.Services.TourPlanService;
+using Project3Vitour.Services.TourPlanServices;
+using Project3Vitour.Services.TourServices;
+using System.Threading.Tasks;
+
+namespace Project3Vitour.Controllers
+{
+    public class TourController : Controller
+    {
+        private readonly ITourService _tourService;
+        private readonly ITourPlanService _tourPlanService;
+        private readonly IReviewService _reviewService;
+        private readonly IReservationService _reservationService;
+        private readonly IImageService _imageService;
+        private readonly ICategoryService _categoryService;
+        public TourController(ITourService tourService, ITourPlanService tourPlanService, IReviewService reviewService,IReservationService reservationService,
+             IImageService imageService
+             , ICategoryService categoryService)
+        {
+            _tourService = tourService;
+            _tourPlanService = tourPlanService;
+            _reviewService = reviewService;
+            _reservationService = reservationService;
+            _imageService = imageService;
+            _categoryService = categoryService;
+        }
+
+     
+        public async Task<IActionResult> TourList(int page = 1)
+        {
+            int pageSize = 6;
+            var values = await _tourService.GetToursWithPagingAsync(page, pageSize);
+
+            // REVİZE: Her turun güncel rezervasyon sayısını modele ekliyoruz
+            foreach (var item in values)
+            {
+                item.CurrentReservationCount = await _reservationService.GetTotalPersonCountByTourIdAsync(item.TourId);
+            }
+
+            var totalTourCount = await _tourService.GetTotalTourCountAsync();
+            var model = new TourPaginationViewModel
+            {
+                Tours = values,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalTourCount,
+                TotalPages = (int)Math.Ceiling((double)totalTourCount / pageSize)
+            };
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> TourSingle(string id)
+        {
+            var value = await _tourService.GetTourByIdAsync(id);
+            if (value == null)
+            {
+                return RedirectToAction("TourList");
+            }
+
+            // 1. REVİZE: DTO içindeki alanı dolduruyoruz (ViewBag yerine doğrudan model kullanımı)
+            value.CurrentReservationCount = await _reservationService.GetTotalPersonCountByTourIdAsync(id);
+
+            // 2. DİĞER VERİLER: Bunlar farklı DTO listeleri olduğu için ViewBag'de kalabilir 
+            // veya daha ileri seviyede bir 'ViewModel' içinde toplanabilir. Şimdilik bu yeterli:
+            ViewBag.Plans = await _tourPlanService.GetTourPlanByTourIdAsync(id);
+            ViewBag.Reviews = await _reviewService.GetAllReviewsByTourIdAsync(id);
+            ViewBag.TourGallery = await _imageService.GetImagesByTourIdAsync(id);
+
+            // Kapasiteyi zaten DTO içindeki value.Capacity'den okuyacağız, 
+            // ekstradan ViewBag.Capacity'ye gerek kalmadı.
+
+            return View(value);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddReview(Project3Vitour.Dtos.ReviewDtos.CreateReviewDto createReviewDto)
+        {
+             
+            createReviewDto.ReviewDate = DateTime.Now;
+            createReviewDto.Status = true;
+
+            await _reviewService.CreateReviewAsync(createReviewDto);
+
+             
+            return RedirectToAction("TourSingle", new { id = createReviewDto.TourId });
+        }
+        [HttpGet]
+        public async Task< IActionResult> Reservation(string id)
+        {
+            var tour = await _tourService.GetTourByIdAsync(id);
+            if (tour == null)
+            {
+                return RedirectToAction("TourList");
+            }
+
+            // Dinamik Veriler: Veritabanından o anki durumu çekiyoruz
+            var currentBookings = await _reservationService.GetTotalPersonCountByTourIdAsync(id);
+
+            ViewBag.TourId = id;
+            ViewBag.TourName = tour.Title;         // Artık "Kapadokya" statik değil
+            ViewBag.Price = tour.Price;             // Artık fiyat turdan geliyor
+            ViewBag.Capacity = tour.Capacity;       // Toplam kontenjan
+            ViewBag.CurrentBookings = currentBookings; // Dolu olan yer
+
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> MakeReservation(CreateReservationDto createReservationDto)
+        {
+            var tour = await _tourService.GetTourByIdAsync(createReservationDto.TourId);
+            if (tour == null)
+            {
+                return Json(new { success = false, message = "Tur bulunamadı." });
+            }
+
+            // Kapasite Kontrolü (Business Logic)
+            var currentBookingsCount = await _reservationService.GetTotalPersonCountByTourIdAsync(createReservationDto.TourId);
+
+            if (currentBookingsCount + createReservationDto.PersonCount > tour.Capacity)
+            {
+                return Json(new { success = false, message = "Üzgünüz, seçilen kişi sayısı için yeterli kontenjan kalmamıştır!" });
+            }
+
+            // Her şey tamamsa kaydet
+            await _reservationService.CreateReservationAsync(createReservationDto);
+            return Json(new { success = true, message = "Rezervasyonunuz başarıyla alındı!" });
+        }
+        
+        
+    }
+}

@@ -1,0 +1,293 @@
+﻿@model Project3Vitour.Dtos.TourDto.GetTourByIdDto
+
+@{
+    Layout = "~/Views/Shared/_TourLayout.cshtml";
+}
+
+<section class="breadcumb-section"
+
+         style="background-image: url('@Model.CoverImageUrl'); background-size: cover; background-position: center; position: relative;">
+    <div class="tf-container">
+        <div class="row">
+            <div class="col-lg-12 center z-index1">
+                
+                <h1 class="title" style="color: white; font-size: 3rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 12px;">
+                    @Model.Title
+
+                    @if (Model.IsStatus == false)
+                    {
+                        <span style="font-size: 12px; background: rgba(239, 68, 68, 0.85); color: white; padding: 2px 10px; border-radius: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.1);">
+                            Pasif
+                        </span>
+                    }
+                    else if (Model.CurrentReservationCount >= Model.Capacity)
+                    {
+                        <span style="font-size: 12px; background: rgba(245, 158, 11, 0.85); color: white; padding: 2px 10px; border-radius: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.1);">
+                            Tur Dolu
+                        </span>
+                    }
+                </h1>
+                <ul class="breadcumb-list flex-five">
+                    <li><a href="/Tour/TourList">Turlar</a></li>
+                    <li><span>@Model.Title</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding:70px 0;">
+    <div class="container-fluid" style="max-width:1600px; padding-left:40px; padding-right:40px;">
+        <div class="row align-items-start" style="margin-bottom:40px;">
+
+            <!-- SOL ALAN -->
+            <div class="col-lg-8 col-xl-9">
+                <img src="@Model.CoverImageUrl"
+                     alt="@Model.Title"
+                     style="width:100%; border-radius:20px; margin-bottom:30px; object-fit:cover; max-height:500px;" />
+
+                <h2 style="margin-bottom:20px;">@Model.Title</h2>
+
+                <p style="font-size:18px; line-height:1.8; color:#555;">
+                    @Model.Description
+                </p>
+
+                <div style="margin-top:50px;">
+                    <div style="background:#ffffff; border-radius:22px; padding:24px; box-shadow:0 10px 30px rgba(15,23,42,0.08);">
+
+                        <ul class="nav nav-pills" id="tourTab" role="tablist" style="gap:12px; margin-bottom:25px; border:none;">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="information-tab" data-bs-toggle="tab" data-bs-target="#information" type="button" role="tab"
+                                        style="border-radius:999px; padding:12px 20px; font-weight:600;">
+                                    Information
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="planning-tab" data-bs-toggle="tab" data-bs-target="#planning" type="button" role="tab"
+                                        style="border-radius:999px; padding:12px 20px; font-weight:600;">
+                                    Tur Planı
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab"
+                                        style="border-radius:999px; padding:12px 20px; font-weight:600;">
+                                    Konum
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab"
+                                        style="border-radius:999px; padding:12px 20px; font-weight:600;">
+                                    Yorumlar
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="gallery-tab" data-bs-toggle="tab" data-bs-target="#gallery" type="button" role="tab"
+                                        style="border-radius:999px; padding:12px 20px; font-weight:600;">
+                                    Galeri
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="tourTabContent">
+
+                            <div class="tab-pane fade show active" id="information" role="tabpanel">
+                                <div style="background:#f8fafc; border-radius:18px; padding:28px;">
+                                    <h4 style="margin-bottom:18px;">Tur Hakkında</h4>
+                                    <p style="font-size:16px; line-height:1.8; color:#475569;">@Model.Description</p>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="planning" role="tabpanel">
+                                <div style="background:#f8fafc; border-radius:18px; padding:28px;">
+                                    <h4 style="margin-bottom:18px;">Tur Planı</h4>
+                                    @if (ViewBag.Plans != null)
+                                    {
+                                        var plans = (List<Project3Vitour.Dtos.TourPlanDto.GetTourPlanDto>)ViewBag.Plans;
+                                        foreach (var plan in plans)
+                                        {
+                                            <div style="margin-bottom:20px; border-left:3px solid #3b82f6; padding-left:15px;">
+
+                                                <h5 style="color:#1e293b;">@plan.DayNumber. Gün: @plan.Title</h5>
+                                                <p style="color:#64748b;">@plan.Description</p>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="location" role="tabpanel">
+                                <div style="background:#f8fafc; border-radius:18px; padding:28px;">
+                                    <h4 style="margin-bottom:18px;">Bölge Haritası</h4>
+
+                                    @if (!string.IsNullOrEmpty(Model.MapLocationImageUrl))
+                                    {
+                                        <div style="width:100%; overflow:hidden; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
+                                             
+                                            <img src="@Model.MapLocationImageUrl"
+                                                 alt="Tur Konumu"
+                                                 style="width:100%; height:auto; display:block; object-fit:contain;" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-info">
+                                            Bu tur için henüz interaktif harita konumu eklenmedi.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+
+                            <div class="tab-pane fade" id="reviews" role="tabpanel">
+                                <div style="background:#f8fafc; border-radius:18px; padding:28px;">
+                                    <h4 style="margin-bottom:18px;">Misafir Yorumları</h4>
+
+                                    @if (ViewBag.Reviews != null)
+                                    {
+                                        var reviews = (List<Project3Vitour.Dtos.ReviewDtos.ResultReviewByTourIdDto>)ViewBag.Reviews;
+                                        if (reviews.Count > 0)
+                                        {
+
+                                            <div style="max-height: 500px; overflow-y: auto; padding-right: 10px;">
+                                                @foreach (var item in reviews)
+                                                {
+                                                    <div style="background:#fff; padding:20px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid #10b981;">
+                                                        <div class="mb-3">
+                                                            <strong style="color: #1e293b; font-size: 18px;">@item.NameSurname</strong>
+                                                        </div>
+
+                                                        <div class="review-ratings" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em; background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+                                                            <div><span style="color:#64748b;">🎯 Rehber:</span> <span style="color:#f59e0b; font-weight:bold;">⭐ @item.GuideRating</span></div>
+                                                            <div><span style="color:#64748b;">🏨 Konaklama:</span> <span style="color:#f59e0b; font-weight:bold;">⭐ @item.AccommodationRating</span></div>
+                                                            <div><span style="color:#64748b;">🚗 Ulaşım:</span> <span style="color:#f59e0b; font-weight:bold;">⭐ @item.TransportationRating</span></div>
+                                                            <div><span style="color:#64748b;">✨ Konfor:</span> <span style="color:#f59e0b; font-weight:bold;">⭐ @item.ComfortRating</span></div>
+                                                        </div>
+
+                                                        <p style="margin:0; color:#475569; font-style: italic; line-height:1.6;">"@item.Detail"</p>
+
+                                                        <div style="margin-top: 15px; font-size: 12px; color: #94a3b8; border-top: 1px solid #eee; padding-top: 8px;">
+                                                            <span>📅 Tarih: @item.ReviewDate.ToString("dd MMM yyyy")</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <p>Henüz yorum yapılmamış.</p>
+                                        }
+                                    }
+
+
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="gallery" role="tabpanel">
+                                <div style="background:#f8fafc; border-radius:18px; padding:28px;">
+                                    <h4 style="margin-bottom:18px;">Turdan Kareler</h4>
+                                    <div class="row">
+                                        @if (ViewBag.TourGallery != null)
+                                        {
+                                            // ViewBag içindeki veriyi listeye çeviriyoruz
+                                            var galleryImages = (List<Project3Vitour.Dtos.TourDto.ResultTourImageDto>)ViewBag.TourGallery;
+
+                                            if (galleryImages.Any())
+                                            {
+                                                foreach (var item in galleryImages)
+                                                {
+                                                    <div class="col-md-4 mb-4">
+                                                        <div style="overflow:hidden; border-radius:15px; height:250px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
+                                                            <img src="@item.ImageUrl" style="width:100%; height:100%; object-fit:cover; transition: transform 0.3s;"
+                                                                 onmouseover="this.style.transform='scale(1.1)'"
+                                                                 onmouseout="this.style.transform='scale(1)'" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="col-12">
+                                                    <div class="alert alert-warning text-center">
+                                                        Bu tura ait henüz bir fotoğraf bulunmuyor.
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-12">
+                                                <div class="alert alert-info text-center">
+                                                    Galeri yüklenirken bir sorun oluştu.
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAĞ ALAN -->
+            <div class="col-lg-4 col-xl-3">
+                <div style="position:sticky; top:120px;">
+                    <div style="background:#ffffff; padding:30px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                        <h4 style="font-weight:800; margin-bottom:25px; color:#0f172a;">
+                            <i class="bi bi-info-circle text-primary"></i> Tur Özeti
+                        </h4>
+
+                        @{
+                            // Kontrolleri burada yapıyoruz
+                            bool isFull = Model.CurrentReservationCount >= Model.Capacity;
+                            bool isPassive = !Model.IsStatus;
+                            bool canBook = !isFull && !isPassive;
+                        }
+
+                        <div style="display:flex; flex-direction:column; gap:18px;">
+                            <div class="d-flex justify-content-between">
+                                <span style="color:#64748b;">Süre</span>
+                                <strong>@Model.DayCount Gün</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span style="color:#64748b;">Kontenjan</span>
+                                <strong class="@(isFull ? "text-danger" : "text-success")">
+                                    @Model.CurrentReservationCount / @Model.Capacity Kişi
+                                </strong>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span style="color:#64748b;">Fiyat</span>
+                                <span style="font-weight:800; color:#2563eb; font-size:1.4rem;">@Model.Price ₺</span>
+                            </div>
+                        </div>
+
+                        @if (canBook)
+                        {
+                            <a asp-controller="Tour"
+                               asp-action="Reservation"
+                               asp-route-id="@Model.TourId"
+                               class="btn btn-primary w-100 py-3 mt-4"
+                               style="text-decoration:none; font-weight:700; border-radius:12px; background-color:#2563eb; color:white; display:block; text-align:center; border:none;">
+                                Rezervasyon Yap
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary w-100 py-3 mt-4" disabled
+                                    style="cursor: not-allowed; opacity: 0.8; font-weight: 700; border-radius: 12px; background-color: #ef4444; color:white; border:none;">
+                                <i class="bi bi-slash-circle me-2"></i>
+                                @(isFull ? "KONTENJAN DOLU" : "TUR PASİF")
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</section>

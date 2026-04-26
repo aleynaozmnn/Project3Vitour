@@ -1,0 +1,111 @@
+﻿@model List<Project3Vitour.Dtos.TourPlanDto.GetTourPlanDto>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold m-0">Tur Rota Yönetimi</h2>
+            <p class="text-muted m-0 small">Turun mevcut günlük planlarını aşağıda görebilir veya yeni gün ekleyebilirsiniz.</p>
+        </div>
+        <a href="/AdminTour/TourList" class="btn btn-outline-dark rounded-pill px-4">Listeye Dön</a>
+    </div>
+
+    @* YENİ GÜN EKLEME FORMU *@
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h6 class="fw-bold mb-3">Yeni Gün Ekle</h6>
+            <form method="post" asp-action="AddPlan">
+                <input type="hidden" name="TourId" value="@ViewBag.tourId" />
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <input type="number" name="DayNumber" class="form-control rounded-3" placeholder="Gün No" required />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="Title" class="form-control rounded-3" placeholder="Başlık" required />
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="Description" class="form-control rounded-3" placeholder="Açıklama" required />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Ekle</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* MEVCUT GÜN PLANLARI LİSTESİ *@
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3" style="width: 120px;">GÜN</th>
+                        <th>BAŞLIK</th>
+                        <th>AÇIKLAMA</th>
+                        <th class="text-end pe-4">İŞLEM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model.OrderBy(x => x.DayNumber))
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="badge bg-primary rounded-pill px-3">@item.DayNumber. Gün</span>
+                                </td>
+                                <td><strong>@item.Title</strong></td>
+                                <td><small class="text-muted">@item.Description</small></td>
+                                <td class="text-end pe-4">
+                                     
+                                    <a href="/AdminTourPlan/UpdatePlan/@item.TourPlanId" class="btn btn-sm btn-outline-warning border-0 me-2">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+
+                                    <a href="javascript:void(0)"
+                                       onclick="confirmDelete('@item.TourPlanId')"
+                                       class="btn btn-sm btn-outline-danger border-0">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-calendar-x d-block mb-2 fs-3"></i>
+                                Bu tura ait henüz bir gün planı eklenmemiş.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu gün planı kalıcı olarak silinecektir!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Onay verilirse silme aksiyonuna yönlendir
+                window.location.href = "/AdminTourPlan/DeletePlan/" + id;
+            }
+        })
+    }
+</script>

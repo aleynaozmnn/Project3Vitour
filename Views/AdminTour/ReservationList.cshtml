@@ -1,0 +1,250 @@
+﻿@model List<Project3Vitour.Dtos.ReservationDto.ResultReservationDto>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Rezervasyonlar";
+}
+
+@section Styles {
+    <style>
+        :root {
+            --brand-blue: #4f46e5;
+            --soft-blue: rgba(79, 70, 229, 0.05);
+            --border-color: #e2e8f0;
+        }
+
+        /* Sayfa Başlığı ve Banner */
+        .header-section {
+            background: white;
+            border-radius: 24px;
+            padding: 24px 32px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        }
+
+        /* --- TABLO KONTROLÜ VE KAYDIRMA --- */
+        .res-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+            /* Sayfanın aşırı uzamasını engellemek için max-height ekledik */
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-responsive {
+            overflow-y: auto; /* Dikey kaydırma aktif */
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        /* Sütun Genişliklerini Sabitleme */
+        .res-table {
+            table-layout: fixed !important;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .col-gezgin {
+            width: 22%;
+        }
+
+        .col-iletisim {
+            width: 20%;
+        }
+
+        .col-tur {
+            width: 22%;
+        }
+
+        .col-kisi {
+            width: 10%;
+        }
+
+        .col-tarih {
+            width: 12%;
+        }
+
+        .col-islem {
+            width: 14%;
+        }
+
+        /* --- MAVİMSİ İNTERAKTİF EFEKTLER --- */
+        .res-table thead {
+            position: sticky; /* Başlık kayarken yukarıda sabit kalır */
+            top: 0;
+            z-index: 10;
+            background: #f8fafc;
+        }
+
+            .res-table thead th {
+                font-size: 11px;
+                font-weight: 700;
+                color: #64748b;
+                text-transform: uppercase;
+                padding: 20px 24px;
+                border-bottom: 2px solid #f1f5f9;
+            }
+
+        .res-table tbody tr {
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+            /* Hover: Mavi Vurgu ve Sol Şerit */
+            .res-table tbody tr:hover {
+                background-color: var(--soft-blue) !important;
+                box-shadow: inset 4px 0 0 var(--brand-blue);
+            }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #eef2ff;
+            color: var(--brand-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 1px solid #e0e7ff;
+            transition: 0.3s;
+        }
+
+        tr:hover .user-avatar {
+            background: var(--brand-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .tour-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff7ed;
+            color: #c2410c;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #ffedd5;
+        }
+
+        /* İşlem Butonları */
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+        }
+
+        .btn-export:hover {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .btn-details:hover {
+            background: var(--brand-blue);
+            color: white;
+            border-color: var(--brand-blue);
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <div class="header-section d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-primary text-white p-3 rounded-4 shadow-sm">
+                <i class="bi bi-person-badge fs-4"></i>
+            </div>
+            <div>
+                <h4 class="fw-bold m-0" style="color: #0f172a;">Gezgin Rezervasyonları</h4>
+                <p class="text-muted m-0 small">Sistemde kayıtlı @Model.Count aktif rezervasyon bulunmaktadır.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="res-card">
+        <div class="table-responsive">
+            <table class="table res-table align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-4 col-gezgin">GEZGİN ADI</th>
+                        <th class="col-iletisim">İLETİŞİM</th>
+                        <th class="text-center col-tur">REZERVE EDİLEN TUR</th>
+                        <th class="text-center col-kisi">KİŞİ</th>
+                        <th class="text-center col-tarih">TARİH</th>
+                        <th class="text-end pe-4 col-islem">İŞLEMLER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="user-avatar">
+                                        @item.NameSurname.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold small">@item.NameSurname</div>
+                                        <div class="text-muted" style="font-size: 10px;">ID: #@item.ReservationId.Substring(0, 8)</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small fw-medium">@item.Email</div>
+                                <div class="text-muted" style="font-size: 11px;">@item.Phone</div>
+                            </td>
+                            <td class="text-center">
+                                <div class="tour-badge">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    @item.Description
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-2" style="font-size: 11px;">
+                                    @item.PersonCount Kişi
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="text-dark small fw-bold">
+                                    <i class="bi bi-calendar3 me-1 text-primary"></i>
+                                    @item.ReservationDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="/AdminTour/ExportToExcel/@item.ReservationId" class="action-btn btn-export" title="Excel">
+                                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                                    </a>
+                                    <a href="/AdminTour/ReservationDetail/@item.ReservationId" class="action-btn btn-details" title="Detay">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="/AdminTour/DeleteReservation/@item.ReservationId" class="action-btn btn-delete" title="Sil">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

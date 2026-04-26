@@ -1,0 +1,325 @@
+﻿@model Project3Vitour.Dtos.TourDto.UpdateTourDto
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Tur Düzenle";
+}
+
+@section Styles {
+    <style>
+        .edit-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 30px;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            padding: 0;
+        }
+
+        .icon-box-edit {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-boss-card {
+            background: white;
+            border-radius: 30px;
+            border: 1px solid #e2e8f0;
+            padding: 40px;
+            margin-top: 30px;
+        }
+
+        .custom-input {
+            border-radius: 12px;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+        }
+
+            .custom-input:focus {
+                background-color: #fff;
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+                outline: none;
+            }
+
+        .edit-card:hover {
+            transform: translateY(-7px);
+            border-color: #4f46e5 !important;
+            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.08) !important;
+        }
+
+        .status-container {
+            background: #ffffff;
+            border: 2px solid #f1f5f9;
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+            .status-container:hover {
+                border-color: #4f46e5;
+                background-color: rgba(79, 70, 229, 0.02);
+            }
+
+        .custom-input:hover:not(:focus) {
+            border-color: #cbd5e1;
+            background-color: #f1f5f9;
+        }
+
+        .btn-dark {
+            transition: all 0.3s ease;
+        }
+
+            .btn-dark:hover {
+                background-color: #4f46e5 !important;
+                transform: scale(1.02);
+                box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2) !important;
+            }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-online {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .status-offline {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: currentColor;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                opacity: 1;
+            }
+
+            70% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+        }
+
+        .form-switch .form-check-input {
+            width: 3.5rem;
+            height: 1.8rem;
+            cursor: pointer;
+        }
+
+            .form-switch .form-check-input:checked {
+                background-color: #10b981;
+                border-color: #10b981;
+            }
+    </style>
+}
+
+<div class="content-wrapper">
+    @* 1. ÜST BANNER *@
+    <div class="d-flex justify-content-between align-items-center mb-5" style="background: white; border-radius: 24px; padding: 32px; border: 1px solid #e2e8f0;">
+        <div class="d-flex align-items-center">
+            <div class="icon-box-edit me-4" style="background: #eef2ff; color: #4f46e5; width: 64px; height: 64px; border-radius: 20px;">
+                <i class="bi bi-pencil-square fs-3"></i>
+            </div>
+            <div>
+                <h1 class="fw-bold m-0" style="letter-spacing: -1.5px; font-size: 2.2rem; color: #0f172a;">Patron Paneli</h1>
+                <p class="text-muted m-0">"@Model.Title" turu için güncelleme yapıyorsunuz.</p>
+            </div>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-light text-dark border p-3 rounded-pill shadow-sm">
+                <i class="bi bi-calendar3 me-2 text-primary"></i> @DateTime.Now.ToString("dd MMMM yyyy")
+            </span>
+        </div>
+    </div>
+
+    @* 2. İSTATİSTİK KARTLARI *@
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="edit-card">
+                <div class="icon-box-edit mb-3" style="background: #ecfdf5; color: #10b981;"><i class="bi bi-geo-alt-fill"></i></div>
+                <h6 class="text-muted fw-bold small text-uppercase">Düzenlenen Tur</h6>
+                <h2 class="fw-bold" style="font-size: 1.2rem; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@Model.Title</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="edit-card">
+                <div class="icon-box-edit mb-3" style="background: #eef2ff; color: #4f46e5;"><i class="bi bi-tag-fill"></i></div>
+                <h6 class="text-muted fw-bold small text-uppercase">Mevcut Fiyat</h6>
+                <h2 class="fw-bold" style="font-size: 2rem; color: #1e293b;">₺@Model.Price.ToString("N0")</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="edit-card">
+                <div class="icon-box-edit mb-3" style="background: #fff7ed; color: #f97316;"><i class="bi bi-people-fill"></i></div>
+                <h6 class="text-muted fw-bold small text-uppercase">Kapasite</h6>
+                <h2 class="fw-bold" style="font-size: 2rem; color: #1e293b;">@Model.Capacity Kişi</h2>
+            </div>
+        </div>
+    </div>
+
+    @* 3. FORM ALANI *@
+    <div class="form-boss-card shadow-sm">
+        <div class="d-flex align-items-center mb-5">
+            <div style="width: 4px; height: 24px; background: #4f46e5; border-radius: 10px; margin-right: 15px;"></div>
+            <h4 class="fw-bold m-0">Tur Bilgilerini Güncelle</h4>
+        </div>
+
+        <form method="post">
+            <input type="hidden" asp-for="TourId" />
+
+            <div class="row g-4">
+                @* 1. TAM GENİŞLİK: TUR BAŞLIĞI *@
+                <div class="col-md-12">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Tur Başlığı</label>
+                    <input type="text" asp-for="Title" class="form-control custom-input" />
+                </div>
+
+                @* 2. SOL SÜTUN: VERİ GİRİŞLERİ *@
+                <div class="col-md-7">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Fiyat (₺)</label>
+                            <input type="number" asp-for="Price" class="form-control custom-input" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Kapasite (Kişi)</label>
+                            <input type="number" asp-for="Capacity" class="form-control custom-input" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Kapak Görseli URL</label>
+                            <input type="text" asp-for="CoverImageUrl" class="form-control custom-input" id="coverUrlInput" />
+                        </div>
+                        @* DROPDOWNLAR TEKRAR YAN YANA *@
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Tur Kategorisi</label>
+                            <select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-select custom-input">
+                                <option value="" disabled>Kategori Seçiniz...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Görünüm Rozeti</label>
+                            <select asp-for="Badge" class="form-select custom-input">
+                                <option value="">Seçiniz...</option>
+                                <option value="Yurt İçi">Yurt İçi</option>
+                                <option value="Yurt Dışı">Yurt Dışı</option>
+                                <option value="Fırsat Turu">Fırsat Turu</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Tur Süresi (Gün)</label>
+                            <input type="number" asp-for="DayCount" class="form-control custom-input" />
+                        </div>
+                    </div>
+                </div>
+
+                @* 3. SAĞ SÜTUN: SABİT ÖNİZLEME KUTUSU *@
+                <div class="col-md-5">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Görsel Önizleme</label>
+                    <div class="preview-box border rounded-4 bg-light d-flex align-items-center justify-content-center"
+                         style="height: 315px; overflow: hidden; border: 2px dashed #e2e8f0 !important;">
+                        <img id="coverPreview" src="@Model.CoverImageUrl"
+                             style="width: 100%; height: 100%; object-fit: cover; transition: all 0.3s;"
+                             onerror="this.src='https://placehold.co/600x400?text=Görsel+Bulunamadı'" />
+                    </div>
+                    <div class="mt-2 text-center">
+                        <small class="text-muted italic"><i class="bi bi-info-circle me-1"></i> Görsel 16:9 formatında optimize edilir.</small>
+                    </div>
+                </div>
+
+                @* 4. ALT KISIM: DURUM VE AÇIKLAMA *@
+                <div class="col-md-12">
+                    <label class="form-label fw-bold small text-muted mb-3 text-uppercase">Tur Görünürlüğü</label>
+                    <div class="status-container d-flex align-items-center justify-content-between shadow-sm">
+                        @* Mevcut Status Switch Kodun Buraya Gelecek *@
+                        <div class="d-flex align-items-center">
+                            <div id="statusIconBox" class="icon-box-edit me-4" style="background: @(Model.IsStatus ? "#ecfdf5" : "#f1f5f9"); color: @(Model.IsStatus ? "#10b981" : "#64748b");">
+                                <i class="bi @(Model.IsStatus ? "bi-eye-fill" : "bi-eye-slash-fill")"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">Turu Yayına Al</h5>
+                                <p class="text-muted small m-0">Web sitesinde görünüp görünmeyeceğini belirler.</p>
+                            </div>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" asp-for="IsStatus" id="statusSwitch">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control custom-input" rows="4"></textarea>
+                </div>
+
+                <div class="col-md-12 mt-4 d-flex justify-content-end gap-3">
+                    <a href="/AdminTour/TourList" class="btn btn-light px-5 py-3 fw-bold rounded-4 border">İptal Et</a>
+                    <button type="submit" class="btn btn-dark px-5 py-3 fw-bold rounded-4 shadow">Değişiklikleri Uygula</button>
+
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/AdminTourPlan/Index/@Model.TourId" class="btn btn-outline-primary fw-bold px-4">
+                        <i class="bi bi-calendar3 me-2"></i> Tur Planını Yönet
+                    </a>
+                     
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#statusSwitch').on('change', function() {
+            const isChecked = $(this).is(':checked');
+            const badge = $('#statusBadge');
+            const iconBox = $('#statusIconBox');
+
+            if(isChecked) {
+                badge.removeClass('status-offline').addClass('status-online').find('span').text('Yayında');
+                iconBox.css({'background': '#ecfdf5', 'color': '#10b981'}).find('i').removeClass('bi-eye-slash-fill').addClass('bi-eye-fill');
+            } else {
+                badge.removeClass('status-online').addClass('status-offline').find('span').text('Gizli');
+                iconBox.css({'background': '#f1f5f9', 'color': '#64748b'}).find('i').removeClass('bi-eye-fill').addClass('bi-eye-slash-fill');
+            }
+        });
+                $('#coverUrlInput').on('input', function() {
+            $('#coverPreview').attr('src', $(this).val());
+        });
+    </script>
+}

@@ -1,0 +1,33 @@
+﻿@model Project3Vitour.Dtos.TourPlanDto.UpdateTourPlanDto
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid p-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h2 class="fw-bold mb-4">Tur Planı Güncelle</h2>
+            <form method="post">
+                @* Gizli alanlar mutlaka olmalı *@
+                <input type="hidden" asp-for="TourPlanId" />
+                <input type="hidden" asp-for="TourId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Gün Numarası</label>
+                    <input type="number" asp-for="DayNumber" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Başlık</label>
+                    <input type="text" asp-for="Title" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary px-5">Değişiklikleri Kaydet</button>
+                <a href="/AdminTourPlan/Index/@Model.TourId" class="btn btn-light ms-2">Vazgeç</a>
+            </form>
+        </div>
+    </div>
+</div>

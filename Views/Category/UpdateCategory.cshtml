@@ -1,0 +1,74 @@
+﻿@model Project3Vitour.Dtos.CategoryDtos.UpdateCategoryDto
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid pt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            @* 1. ÜST HEADER: DERİNLİK EFEKTİ *@
+            <div style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); border-radius: 20px; padding: 30px; margin-bottom: -40px; position: relative; z-index: 2; shadow: 0 10px 20px rgba(79, 70, 229, 0.3);">
+                <div class="d-flex align-items-center">
+                    <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+                        <i class="bi bi-pencil-square text-white fs-2"></i>
+                    </div>
+                    <div class="ms-4">
+                        <h3 class="fw-bold text-white m-0" style="letter-spacing: -1px;">Kategori Düzenle</h3>
+                        <p class="text-white text-opacity-75 m-0 small">Değişiklikleri yapın ve sistemle senkronize edin.</p>
+                    </div>
+                </div>
+            </div>
+
+            @* 2. ANA FORM KARTI: BEYAZ DERİNLİK *@
+            <div class="card border-0 shadow-lg" style="border-radius: 24px; padding: 60px 40px 40px 40px; background: white;">
+                <form method="post">
+                    <input type="hidden" asp-for="CategoryId" />
+
+                    @* Kategori Adı Giriş Alanı *@
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark small text-uppercase" style="letter-spacing: 1px; color: #64748b !important;">Kategori İsmi</label>
+                        <div style="position: relative;">
+                            <i class="bi bi-tag text-primary" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); z-index: 5;"></i>
+                            <input type="text" asp-for="CategoryName" class="form-control"
+                                   style="background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 12px; padding: 15px 15px 15px 45px; font-weight: 600; transition: all 0.3s ease;"
+                                   onfocus="this.style.borderColor='#4f46e5'; this.style.background='white'; this.style.boxShadow='0 0 0 4px rgba(79, 70, 229, 0.1)';"
+                                   onblur="this.style.borderColor='#f1f5f9'; this.style.background='#f8fafc';">
+                        </div>
+                    </div>
+
+                    @* Durum Anahtarı *@
+                    <div class="mb-5 p-3" style="background: #f8fafc; border-radius: 15px; border: 1px dashed #cbd5e1;">
+                        <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0">
+                            <label class="form-check-label fw-bold text-dark" for="statusSwitch">Kategori Aktiflik Durumu</label>
+                            <input class="form-check-input ms-0" type="checkbox" id="statusSwitch" asp-for="CategoryStatus" style="width: 50px; height: 25px; cursor: pointer; float: none;">
+                        </div>
+                    </div>
+
+                    @* Butonlar *@
+                    <div class="row g-3">
+                        <div class="col-8">
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-lg"
+                                    style="background: #4f46e5; border: none; border-radius: 12px; transition: 0.3s;">
+                                <i class="bi bi-cloud-upload-fill me-2"></i> Güncellemeyi Kaydet
+                            </button>
+                        </div>
+                        <div class="col-4">
+                            <a href="/Category/Index" class="btn btn-light w-100 py-3 fw-bold border" style="border-radius: 12px; color: #64748b;">İptal</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* O meşhur buton hover efekti */
+    .btn-primary:hover {
+        background: #3730a3 !important;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4) !important;
+    }
+</style>

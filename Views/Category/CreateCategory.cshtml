@@ -1,0 +1,156 @@
+﻿@using Project3Vitour.Dtos.CategoryDtos
+@model CreateCategoryDto
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Yeni Kategori";
+}
+
+@section Styles {
+    <style>
+        /* 1. KART YAPISI VE DASHBOARD GÖLGESİ */
+        .boss-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 2. MAVİMSİ İNTERAKTİF EFEKT (Dashboard gibi kibar) */
+        .boss-card-interactive:hover {
+            transform: translateY(-8px);
+            border-color: #4f46e5 !important; /* Mavilik geri geldi */
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08) !important; /* Hafif mavi parlama */
+        }
+
+        /* 3. İKON KUTUSU MAVİSİ */
+        .boss-icon-box {
+            background: #eff6ff; /* Dashboard açık mavi arka plan */
+            color: #2563eb; /* Dashboard koyu mavi ikon */
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .boss-card-interactive:hover .boss-icon-box {
+            transform: scale(1.1) rotate(-3deg);
+            background: #2563eb;
+            color: #fff;
+        }
+
+        /* 4. FORM TASARIMI */
+        .form-control-boss {
+            border-radius: 14px !important;
+            padding: 16px 20px !important;
+            border: 1.5px solid #e2e8f0 !important;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+            .form-control-boss:focus {
+                border-color: #4f46e5 !important;
+                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+                outline: none;
+            }
+
+        /* 5. BUTON (Dashboard Koyu Tema) */
+        .btn-save-boss {
+            background: #0f172a;
+            color: white;
+            border-radius: 14px;
+            padding: 16px 32px;
+            font-weight: 700;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+            .btn-save-boss:hover {
+                background: #4f46e5; /* Buton hover mavisi */
+                box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+            }
+    </style>
+}
+
+@* 1. PATRON BANNER (Dashboard Mavisiyle) *@
+<div class="boss-card" style="padding: 32px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+    <div class="d-flex align-items-center">
+        <div class="boss-icon-box" style="width: 64px; height: 64px; font-size: 1.8rem;">
+            <i class="bi bi-grid-1x2-fill"></i>
+        </div>
+        <div class="ms-4">
+            <h1 class="fw-bold m-0" style="letter-spacing: -1.5px; font-size: 28px;">Kategori Yönetimi</h1>
+            <p class="text-muted m-0">Dashboard standartlarında kategori tanımlama ekranı.</p>
+        </div>
+    </div>
+    <a href="/Category/Index" class="btn btn-light border fw-bold px-4 py-2 shadow-sm" style="border-radius: 12px;">
+        <i class="bi bi-arrow-left me-2 text-primary"></i> Listeye Dön
+    </a>
+</div>
+
+<div class="row g-4">
+    @* SOL: FORM *@
+    <div class="col-lg-7">
+        <div class="boss-card boss-card-interactive p-4 p-lg-5">
+            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                <i class="bi bi-pencil-square me-2 text-primary"></i>Kayıt Formu
+            </h5>
+
+            <form method="post">
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark small mb-2">KATEGORİ BAŞLIĞI</label>
+                    <input type="text" asp-for="CategoryName" class="form-control-boss w-100" placeholder="Örn: Ege Kıyıları" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark small mb-2">OPERASYONEL NOTLAR</label>
+                    <textarea class="form-control-boss w-100" rows="5" placeholder="Sistem yöneticisi için kısa notlar..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-save-boss w-100">
+                    <i class="bi bi-cloud-arrow-up-fill me-2"></i> Kategoriyi Kaydet
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @* SAĞ: ANALİZ PANELİ *@
+    <div class="col-lg-5">
+        <div class="boss-card boss-card-interactive p-4">
+            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                <i class="bi bi-cpu-fill me-2 text-primary"></i>Sistem Analizi
+            </h5>
+
+            <div class="p-3 mb-3 rounded-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="boss-icon-box" style="width: 52px; height: 52px;">
+                        <i class="bi bi-collection-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold">TOPLAM GRUP</div>
+                        <div class="fw-bold fs-4 text-dark">6 Kategori</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 rounded-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="boss-icon-box" style="width: 52px; height: 52px; background: #ecfdf5; color: #10b981;">
+                        <i class="bi bi-shield-check fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold">DURUM</div>
+                        <div class="fw-bold fs-4 text-dark">Güvenli</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 rounded-4" style="border: 1.5px dashed #4f46e5; background: rgba(79, 70, 229, 0.02);">
+                <p class="text-muted small m-0" style="line-height: 1.6;">
+                    <strong class="text-primary">Mavi Şerit Notu:</strong> Kategori ekleme işlemi bittikten sonra "Listeye Dön" butonuyla tüm kategorileri mavi vurgulu Dashboard tablosunda görebilirsiniz.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

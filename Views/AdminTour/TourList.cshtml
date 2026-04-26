@@ -1,0 +1,280 @@
+﻿@model List<ResultTourDto>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Tur Paketleri Yönetimi";
+}
+
+@section Styles {
+    <style>
+        /* Görsel ve Statü Tasarımları */
+        .ap-tour-img {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .ap-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none !important;
+        }
+
+        .status-live {
+            background: rgba(16,185,129,.1);
+            color: #10b981;
+        }
+
+        .status-draft {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .ap-status:hover {
+            transform: scale(1.05);
+        }
+
+        /* Kart ve Tablo Hover Efektleri (Mavi Tema) */
+        .col-md-4 .bg-white {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+            .col-md-4 .bg-white:hover {
+                transform: translateY(-5px);
+                border-color: #4f46e5 !important;
+                box-shadow: 0 10px 20px rgba(79, 70, 229, 0.05) !important;
+            }
+
+        .table-hover tbody tr {
+            transition: all 0.2s ease;
+        }
+
+            .table-hover tbody tr:hover {
+                background-color: rgba(79, 70, 229, 0.04) !important;
+                box-shadow: inset 4px 0 0 #4f46e5;
+            }
+
+        /* Filtreleme Paneli Stilleri */
+        .search-wrapper {
+            position: relative;
+        }
+
+            .search-wrapper i {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94a3b8;
+            }
+
+        .search-input {
+            padding-left: 45px !important;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0;
+            height: 48px;
+        }
+
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+    </style>
+}
+
+@* 1. BANNER *@
+<div class="boss-banner" style="background: white; border-radius: 24px; padding: 24px 32px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <div class="d-flex align-items-center">
+        <div class="banner-icon-box" style="width: 56px; height: 56px; background: #f1f0ff; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #4f46e5; margin-right: 20px;">
+            <i class="bi bi-map-fill"></i>
+        </div>
+        <div>
+            <h2 class="fw-bold m-0" style="letter-spacing: -1px;">Tur Paketleri</h2>
+            <p class="text-muted m-0 small">Sistemdeki turları buradan yönetebilirsiniz.</p>
+        </div>
+    </div>
+    <a href="/AdminTour/CreateTour" class="btn btn-dark fw-bold px-4 py-2" style="border-radius: 12px;">
+        <i class="bi bi-plus-lg me-2"></i> Yeni Tur Ekle
+    </a>
+</div>
+
+@* 2. GELİŞMİŞ FİLTRELEME PANELİ *@
+<div class="row g-3 mb-4 align-items-end">
+    <div class="col-md-4">
+        <label class="filter-label">Tur Adı veya ID</label>
+        <div class="search-wrapper shadow-sm">
+            <i class="bi bi-search"></i>
+            <input type="text" id="nameFilter" class="form-control search-input" placeholder="Arama yapın...">
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <label class="filter-label">Kategori (Rozet)</label>
+        <select id="categoryFilter" class="form-select shadow-sm" style="border-radius: 12px; height: 48px;">
+            <option value="">Tüm Kategoriler</option>
+            <option value="Kültür Turu">Kültür Turu</option>
+            <option value="Yurt Dışı">Yurt Dışı</option>
+            <option value="Yurt İçi">Yurt İçi</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="filter-label">Maksimum Fiyat (₺)</label>
+        <input type="number" id="priceFilter" class="form-control shadow-sm" style="border-radius: 12px; height: 48px;" placeholder="Örn: 30000">
+    </div>
+
+    <div class="col-md-2">
+        <button id="resetFilters" class="btn btn-outline-secondary w-100 fw-bold" style="border-radius: 12px; height: 48px;">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Sıfırla
+        </button>
+    </div>
+</div>
+
+@* 3. İSTATİSTİK KARTLARI *@
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="p-4 bg-white rounded-4 shadow-sm text-center text-md-start">
+            <div class="text-muted small fw-bold">TOPLAM TUR</div>
+            <h2 class="fw-bold m-0">@Model.Count</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-4 bg-white rounded-4 shadow-sm text-center text-md-start">
+            <div class="text-muted small fw-bold text-success">AKTİF TURLAR</div>
+            <h2 class="fw-bold m-0 text-success">@Model.Count(x => x.IsStatus)</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-4 bg-white rounded-4 shadow-sm text-center text-md-start">
+            <div class="text-muted small fw-bold text-warning">ORTALAMA FİYAT</div>
+            <h2 class="fw-bold m-0 text-warning">@(Model.Any() ? Model.Average(x => (double)x.Price).ToString("N0") : "0")₺</h2>
+        </div>
+    </div>
+</div>
+
+@* 4. TABLO *@
+<div class="bg-white border rounded-4 overflow-hidden shadow-sm">
+    <table class="table table-hover align-middle m-0" id="tourTable">
+        <thead class="bg-light text-muted small text-uppercase">
+            <tr>
+                <th class="ps-4 py-3">Tur Bilgisi</th>
+                <th>Rozet</th>
+                <th>Fiyat</th>
+                <th>Durum</th>
+                <th class="text-end pe-4">İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="@item.CoverImageUrl" class="ap-tour-img" onerror="this.src='https://placehold.co/100x100?text=Tur'">
+                            <div>
+                                <div class="fw-bold text-dark">@item.Title</div>
+                                <div class="text-muted extra-small" style="font-size: 11px;">ID: @item.TourId</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-light text-primary border">@item.Badge</span></td>
+                    <td class="fw-bold text-indigo">₺@item.Price.ToString("N0")</td>
+                    <td>
+                        <a href="/AdminTour/ChangeStatus/@item.TourId">
+                            @if (item.IsStatus)
+                            {
+                                <span class="ap-status status-live">● Yayında</span>
+                            }
+                            else
+                            {
+                                <span class="ap-status status-draft">● Pasif</span>
+                            }
+                        </a>
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="btn-group">
+                            <a href="/AdminTour/AddImage/@item.TourId" class="btn btn-sm btn-outline-secondary" title="Resim Ekle"><i class="bi bi-image"></i></a>
+                            <a href="/AdminTour/UpdateTour/@item.TourId" class="btn btn-sm btn-outline-primary" title="Düzenle"><i class="bi bi-pencil"></i></a>
+                            <a href="/AdminTour/DeleteTour/@item.TourId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Silmek istediğine emin misin?')" title="Sil"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+
+            // FİLTRELEME FONKSİYONU
+            function applyFilters() {
+                var nameVal = $("#nameFilter").val().toLowerCase();
+                var catVal = $("#categoryFilter").val().toLowerCase();
+                var priceLimit = parseFloat($("#priceFilter").val()) || Infinity;
+
+                $("#tourTable tbody tr").each(function () {
+                    var row = $(this);
+
+                    // Verileri Tablodan Oku
+                    var titleAndId = row.find("td:eq(0)").text().toLowerCase();
+                    var badge = row.find("td:eq(1)").text().toLowerCase();
+
+                    // Fiyatı Temizle (₺ ve . işaretlerini at)
+                    var priceRaw = row.find("td:eq(2)").text().replace(/[^\d]/g, "");
+                    var price = parseFloat(priceRaw) || 0;
+
+                    // Mantıksal Kontrol
+                    var matchName = titleAndId.includes(nameVal);
+                    var matchCat = (catVal === "") || badge.includes(catVal);
+                    var matchPrice = price <= priceLimit;
+
+                    if (matchName && matchCat && matchPrice) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                });
+            }
+
+            // Olay İzleyiciler (Inputlar değiştikçe çalışır)
+            $("#nameFilter, #priceFilter").on("keyup change", applyFilters);
+            $("#categoryFilter").on("change", applyFilters);
+
+            // Sıfırla Butonu
+            $("#resetFilters").click(function () {
+                $("#nameFilter, #priceFilter").val("");
+                $("#categoryFilter").val("");
+                $("#tourTable tbody tr").show();
+            });
+
+            // Başarı Mesajı (TempData)
+            @if (TempData["SuccessMessage"] != null)
+            {
+                    <text>
+                    Swal.fire({
+                        title: 'Başarılı!',
+                        text: '@TempData["SuccessMessage"]',
+                        icon: 'success',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                    </text>
+            }
+        });
+    </script>
+}

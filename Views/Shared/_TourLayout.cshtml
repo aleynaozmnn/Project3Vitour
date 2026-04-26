@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    @await Component.InvokeAsync("_TourHeadComponentPartial")
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body>
+
+    @RenderBody()
+
+    @await Component.InvokeAsync("_TourFooterComponentPartial")
+
+    <script src="/vitour/app/js/jquery.min.js"></script>
+    <script src="/vitour/app/js/bootstrap.min.js"></script>
+    <script src="/vitour/app/js/jquery.fancybox.js"></script>
+    <script src="/vitour/app/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

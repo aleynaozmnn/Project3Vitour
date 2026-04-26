@@ -1,0 +1,322 @@
+﻿@model Project3Vitour.Models.TourPaginationViewModel
+@using Project3Vitour.Entities
+@{
+    Layout = "~/Views/Shared/_TourLayout.cshtml";
+}
+<style>
+    .tour-list-section {
+        padding: 70px 0;
+    }
+
+    .tour-card-modern {
+        background: #fff;
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        transition: all .28s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(226, 232, 240, 0.7);
+    }
+
+        .tour-card-modern:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+        }
+
+    .tour-card-image-wrap {
+        position: relative;
+        overflow: hidden;
+    }
+
+        .tour-card-image-wrap img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            transition: transform .45s ease;
+            display: block;
+        }
+
+    .tour-card-modern:hover .tour-card-image-wrap img {
+        transform: scale(1.06);
+    }
+
+    .tour-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1;
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+    }
+
+    .tour-card-body-modern {
+        padding: 22px 22px 20px 22px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .tour-card-title-modern {
+        font-size: 28px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 14px;
+        min-height: 68px;
+    }
+
+        .tour-card-title-modern a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+            .tour-card-title-modern a:hover {
+                color: #2563eb;
+            }
+
+    .tour-meta-modern {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 14px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #64748b;
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+
+    .tour-meta-left,
+    .tour-meta-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .tour-meta-left i {
+            color: #22c55e;
+            font-size: 15px;
+        }
+
+    .tour-desc-modern {
+        color: #667085;
+        font-size: 15px;
+        line-height: 1.8;
+        min-height: 84px;
+        margin-bottom: 18px;
+    }
+
+    .tour-bottom-modern {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+    }
+
+    .tour-price-modern {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+        .tour-price-modern small {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .tour-price-modern strong {
+            color: #16a34a;
+            font-size: 28px;
+            line-height: 1;
+            font-weight: 800;
+        }
+
+    .tour-btn-modern {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #0f172a;
+        color: #fff;
+        text-decoration: none;
+        padding: 11px 18px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all .22s ease;
+        white-space: nowrap;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+    }
+
+        .tour-btn-modern:hover {
+            background: #1e293b;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .tour-btn-modern span {
+            font-size: 15px;
+            line-height: 1;
+        }
+
+    .tour-section-head {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .tour-section-head h2 {
+            font-size: 56px;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            color: #0f172a;
+        }
+
+        .tour-section-head p {
+            color: #64748b;
+            font-size: 16px;
+            margin: 0;
+        }
+
+    @@media (max-width: 768px) {
+        .tour-card-title-modern {
+            font-size: 24px;
+            min-height: auto;
+        }
+
+        .tour-section-head h2 {
+            font-size: 40px;
+        }
+
+        .tour-bottom-modern {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .tour-btn-modern {
+            width: 100%;
+        }
+    }
+</style>
+@await Component.InvokeAsync("_TourBreadCrumdComponentPartial")
+
+<section class="tour-list-section">
+    <div class="tf-container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div style="background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 1rem; border-radius: 12px; margin-bottom: 20px;">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        <div class="tour-section-head">
+            <h2>Turlarımız</h2>
+            <p>Size uygun turu seçin ve keşfetmeye başlayın</p>
+        </div>
+
+        <div class="row">
+            @foreach (var item in Model.Tours)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="tour-card-modern">
+                        <div class="tour-card-image-wrap">
+                            <a href="/Tour/TourSingle/@item.TourId">
+                                <img src="@item.CoverImageUrl" alt="@item.Title" />
+                            </a>
+
+                            @if (!string.IsNullOrEmpty(item.Badge))
+                            {
+                                <span class="tour-badge">@item.Badge</span>
+                            }
+                    </div>
+
+                    <div class="tour-card-body-modern">
+                        <div class="tour-card-title-modern">
+                            <a href="/Tour/TourSingle/@item.TourId">
+                                @item.Title
+                            </a>
+                        </div>
+
+                        <div class="tour-meta-modern">
+                            <div class="tour-meta-left">
+                                <i class="icon-time-left"></i>
+                                <span>@item.DayCount Gün</span>
+                            </div>
+
+                            <div class="tour-meta-right">
+                                <span>Kontenjan: @item.Capacity</span>
+                            </div>
+                        </div>
+
+                        <div class="tour-desc-modern">
+                            @(item.Description != null && item.Description.Length > 95
+                                                        ? item.Description.Substring(0, 95) + "..."
+                                                        : item.Description)
+                        </div>
+
+                            <div class="tour-bottom-modern">
+                                <div class="tour-price-modern">
+                                    <small>Fiyat</small>
+                                    <strong>@item.Price ₺</strong>
+                                </div>
+
+                                <a href="/Tour/TourSingle/@item.TourId" class="tour-btn-modern">
+                                    İncele <span>→</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        }
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="tf-pagination flex-five mt-20">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li>
+                                <a class="pages-link" href="/Tour/TourList?page=@(Model.CurrentPage - 1)">Önceki</a>
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i == Model.CurrentPage)
+                            {
+                                <li class="pages-item active" aria-current="page">
+                                    <a class="pages-link" href="/Tour/TourList?page=@i">@i</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a class="pages-link" href="/Tour/TourList?page=@i">@i</a>
+                                </li>
+                            }
+                        }
+
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li>
+                                <a class="pages-link" href="/Tour/TourList?page=@(Model.CurrentPage + 1)">Sonraki</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+</section>

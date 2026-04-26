@@ -1,0 +1,166 @@
+﻿@using Project3Vitour.Dtos.CategoryDtos
+@model List<ResultCategoryDto>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+}
+
+@section Styles {
+    <style>
+        /* 1. DASHBOARD BANNER STİLİ */
+        .boss-category-banner {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            transition: all 0.3s ease;
+        }
+
+            .boss-category-banner:hover {
+                border-color: #4f46e5 !important;
+                box-shadow: 0 8px 25px rgba(79, 70, 229, 0.05);
+            }
+
+        /* 2. DASHBOARD TABLO YAPISI VE MAVİ EFEKT */
+        .category-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-hover tbody tr {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+            /* İŞTE O İSTEDİĞİN ELEKTRİK MAVİSİ EFEKT */
+            .table-hover tbody tr:hover {
+                background-color: rgba(79, 70, 229, 0.02) !important;
+                /* Sol tarafa o Dashboard'daki belirgin indigo şerit */
+                box-shadow: inset 4px 0 0 #4f46e5 !important;
+            }
+
+        /* 3. DASHBOARD DETAY BUTONLARI */
+        .btn-action {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+
+            .btn-action:hover {
+                background-color: #4f46e5 !important;
+                color: white !important;
+                border-color: #4f46e5 !important;
+                transform: translateY(-2px);
+            }
+
+        /* Badge Tasarımı */
+        .status-pill {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .table thead th {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            padding-bottom: 20px;
+        }
+    </style>
+}
+
+@* 1. BANNER *@
+<div class="boss-category-banner">
+    <div class="d-flex align-items-center">
+        <div style="width: 64px; height: 64px; background: #eff6ff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #4f46e5; margin-right: 24px;">
+            <i class="bi bi-tags-fill"></i>
+        </div>
+        <div>
+            <h1 class="fw-bold m-0" style="letter-spacing: -1.5px; font-size: 28px;">Kategori Yönetimi</h1>
+            <p class="text-muted m-0">Sistemdeki tur gruplarını ve hiyerarşiyi buradan kontrol edin.</p>
+        </div>
+    </div>
+    <a href="/Category/CreateCategory" class="btn btn-dark fw-bold px-4 py-2" style="border-radius: 12px;">
+        <i class="bi bi-plus-lg me-2"></i> Yeni Kategori
+    </a>
+</div>
+
+@* 2. TABLO ALANI *@
+<div class="category-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+        <h5 class="fw-bold m-0">Mevcut Kategoriler</h5>
+        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill small">Toplam @Model.Count Kayıt</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th class="ps-3">#</th>
+                    <th>KATEGORİ ADI</th>
+                    <th class="text-center">DURUM</th>
+                    <th class="text-end pe-3">İŞLEMLER</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    count++;
+                    <tr>
+                        <td class="ps-3 fw-bold text-muted" style="width: 80px;">#@count</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light p-2 rounded-3 me-3 text-primary">
+                                    <i class="bi bi-folder2-open"></i>
+                                </div>
+                                <span class="fw-bold text-dark">@item.CategoryName</span>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            @if (item.CategoryStatus)
+                            {
+                                <span class="status-pill bg-success-subtle text-success">
+                                    <i class="bi bi-check2-circle me-1"></i> AKTİF
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="status-pill bg-danger-subtle text-danger">
+                                    <i class="bi bi-x-circle me-1"></i> PASİF
+                                </span>
+                            }
+                        </td>
+                        <td class="text-end pe-3">
+                            <a href="/Category/UpdateCategory/@item.CategoryId" class="btn-action me-1">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="/Category/DeleteCategory/@item.CategoryId"
+                               class="btn-action text-danger shadow-sm"
+                               onclick="return confirm('@item.CategoryName kategorisini silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')">
+                                <i class="bi bi-trash3"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
