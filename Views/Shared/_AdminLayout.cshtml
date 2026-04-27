@@ -190,8 +190,9 @@
                 </a>
 
                 <div class="ap-nav-label">SİSTEM AYARLARI</div>
-                <a href="/Settings" class="ap-nav-item">
-                    <i class="bi bi-gear"></i> Ayarlar
+
+                <a href="/AdminSettings/Index" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminSettings" ? "active" : "")">
+                    <i class="bi bi-gear-fill"></i> Ayarlar
                 </a>
             </nav>
 

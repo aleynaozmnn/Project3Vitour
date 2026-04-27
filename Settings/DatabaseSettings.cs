@@ -11,6 +11,8 @@
         public string ReservationCollectionName { get; set; }
         public string ImageCollectionName { get; set; }
         public string DestinationCollectionName { get; set; }
+        public string SettingsCollectionName { get; set; }
+
     }
 }
 

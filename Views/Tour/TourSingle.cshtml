@@ -1,16 +1,87 @@
 ﻿@model Project3Vitour.Dtos.TourDto.GetTourByIdDto
+@using Project3Vitour.Dtos.TourDto
+@using Project3Vitour.Dtos.ImageDtos;
 
 @{
     Layout = "~/Views/Shared/_TourLayout.cshtml";
 }
 
-<section class="breadcumb-section"
+<style>
+    /* Galeri Grid Yapısı */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
 
+    .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 15px;
+        height: 200px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+    /* Tab Butonları Güzelleştirme */
+    .nav-pills .nav-link {
+        color: #64748b;
+        background: #f1f5f9;
+        transition: all 0.3s ease;
+    }
+
+        .nav-pills .nav-link.active {
+            background-color: #2563eb !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+    /* Scrollbar Güzelleştirme (Yorumlar için) */
+    #reviews .tab-pane::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #reviews .tab-pane::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    /* Breadcrumb ve Başlık Karartma (Okunabilirlik için) */
+    .breadcumb-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 0;
+    }
+
+    .z-index1 {
+        position: relative;
+        z-index: 1;
+    }
+</style>
+
+<section class="breadcumb-section"
          style="background-image: url('@Model.CoverImageUrl'); background-size: cover; background-position: center; position: relative;">
     <div class="tf-container">
         <div class="row">
             <div class="col-lg-12 center z-index1">
-                
+
                 <h1 class="title" style="color: white; font-size: 3rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 12px;">
                     @Model.Title
 
@@ -40,7 +111,6 @@
     <div class="container-fluid" style="max-width:1600px; padding-left:40px; padding-right:40px;">
         <div class="row align-items-start" style="margin-bottom:40px;">
 
-            <!-- SOL ALAN -->
             <div class="col-lg-8 col-xl-9">
                 <img src="@Model.CoverImageUrl"
                      alt="@Model.Title"
@@ -119,21 +189,29 @@
                                 <div style="background:#f8fafc; border-radius:18px; padding:28px;">
                                     <h4 style="margin-bottom:18px;">Bölge Haritası</h4>
 
-                                    @if (!string.IsNullOrEmpty(Model.MapLocationImageUrl))
-                                    {
-                                        <div style="width:100%; overflow:hidden; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
-                                             
-                                            <img src="@Model.MapLocationImageUrl"
-                                                 alt="Tur Konumu"
-                                                 style="width:100%; height:auto; display:block; object-fit:contain;" />
-                                        </div>
+                                    @{
+                                        string displayImagePath = "";
+
+                                        // 1. Önce DB'deki URL'e bak
+                                        if (!string.IsNullOrEmpty(Model.MapLocationImageUrl))
+                                        {
+                                            displayImagePath = Model.MapLocationImageUrl;
+                                        }
+                                        else
+                                        {
+                                            // 2. DB boşsa, başlığın İLK kelimesini al (Örn: "Paris")
+                                            var firstWord = Model.Title.Split(' ')[0].ToLower()
+                                            .Replace("ç", "c").Replace("ğ", "g").Replace("ı", "i")
+                                            .Replace("ö", "o").Replace("ş", "s").Replace("ü", "u");
+                                            displayImagePath = "/images/" + firstWord + ".png";
+                                        }
                                     }
-                                    else
-                                    {
-                                        <div class="alert alert-info">
-                                            Bu tur için henüz interaktif harita konumu eklenmedi.
-                                        </div>
-                                    }
+
+                                    <div style="width:100%; overflow:hidden; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
+                                        <img src="@displayImagePath"
+                                             style="width:100%; height:auto; display:block; object-fit:contain;"
+                                             onerror="this.parentElement.innerHTML='<div class=\'alert alert-danger\'>Resim bulunamadı: @displayImagePath</div>';" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -185,44 +263,31 @@
 
                             <div class="tab-pane fade" id="gallery" role="tabpanel">
                                 <div style="background:#f8fafc; border-radius:18px; padding:28px;">
-                                    <h4 style="margin-bottom:18px;">Turdan Kareler</h4>
-                                    <div class="row">
-                                        @if (ViewBag.TourGallery != null)
-                                        {
-                                            // ViewBag içindeki veriyi listeye çeviriyoruz
-                                            var galleryImages = (List<Project3Vitour.Dtos.TourDto.ResultTourImageDto>)ViewBag.TourGallery;
+                                    <h4 class="mb-4">Turdan Kareler</h4>
 
-                                            if (galleryImages.Any())
-                                            {
-                                                foreach (var item in galleryImages)
+                                    @if (ViewBag.TourGallery != null)
+                                    {
+                                        var galleryList = (List<Project3Vitour.Dtos.ImageDtos.ResultTourImageDto>)ViewBag.TourGallery;
+
+                                        if (galleryList.Any())
+                                        {
+                                            <div class="row">
+                                                @foreach (var item in galleryList)
                                                 {
-                                                    <div class="col-md-4 mb-4">
-                                                        <div style="overflow:hidden; border-radius:15px; height:250px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
-                                                            <img src="@item.ImageUrl" style="width:100%; height:100%; object-fit:cover; transition: transform 0.3s;"
-                                                                 onmouseover="this.style.transform='scale(1.1)'"
-                                                                 onmouseout="this.style.transform='scale(1)'" />
+                                                    <div class="col-md-4 col-sm-6 mb-4">
+                                                        <div class="gallery-item">
+                                                            <img src="@item.ImageUrl" class="img-fluid rounded"
+                                                                 style="width: 100%; height: 200px; object-fit: cover;" alt="Tour Gallery">
                                                         </div>
                                                     </div>
                                                 }
-                                            }
-                                            else
-                                            {
-                                                <div class="col-12">
-                                                    <div class="alert alert-warning text-center">
-                                                        Bu tura ait henüz bir fotoğraf bulunmuyor.
-                                                    </div>
-                                                </div>
-                                            }
+                                            </div>
                                         }
                                         else
                                         {
-                                            <div class="col-12">
-                                                <div class="alert alert-info text-center">
-                                                    Galeri yüklenirken bir sorun oluştu.
-                                                </div>
-                                            </div>
+                                            <div class="alert alert-info">Henüz galeri görseli eklenmemiş.</div>
                                         }
-                                    </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -230,7 +295,6 @@
                 </div>
             </div>
 
-            <!-- SAĞ ALAN -->
             <div class="col-lg-4 col-xl-3">
                 <div style="position:sticky; top:120px;">
                     <div style="background:#ffffff; padding:30px; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
@@ -284,10 +348,6 @@
                     </div>
                 </div>
             </div>
-            </div>
-            </div>
         </div>
-
-    </div>
     </div>
 </section>

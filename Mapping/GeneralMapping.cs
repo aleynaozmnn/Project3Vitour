@@ -2,9 +2,11 @@
 using Project3Vitour.Dtos.CategoryDtos;
 using Project3Vitour.Dtos.DestinationDtos;
 using Project3Vitour.Dtos.ReviewDtos;
+using Project3Vitour.Dtos.SettingsDtos;
 using Project3Vitour.Dtos.TourDto;
 using Project3Vitour.Dtos.TourPlanDto;
 using Project3Vitour.Entities;
+using Project3Vitour.Dtos.SettingsDtos;
 
 namespace Project3Vitour.Mapping
 {
@@ -40,6 +42,8 @@ namespace Project3Vitour.Mapping
             CreateMap<TourPlan, GetTourPlanDto>().ReverseMap();
             CreateMap<TourPlan, CreateTourPlanDto>().ReverseMap();
             CreateMap<TourPlan, UpdateTourPlanDto>().ReverseMap();
+
+            CreateMap<Setting, UpdateSettingsDto>().ReverseMap();
 
         }
     }

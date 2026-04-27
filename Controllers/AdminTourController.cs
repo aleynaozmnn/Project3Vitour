@@ -8,6 +8,7 @@ using Project3Vitour.Services.ReservationService;
 using Project3Vitour.Services.TourServices;
 using System.IO;
 using System.Threading.Tasks;
+using Project3Vitour.Dtos.ImageDtos;
 
 namespace Project3Vitour.Controllers
 {
@@ -54,7 +55,19 @@ namespace Project3Vitour.Controllers
             TempData["SuccessMessage"] = "Tur başarıyla sisteme eklendi!";
             return RedirectToAction("TourList");
         }
+        public async Task<IActionResult> DeleteImage(string id)
+        {
+            // 1. Silinecek resmi bul ki hangi tura ait olduğunu bilelim (Geri dönmek için)
+            // Eğer ImageService içinde GetById gibi bir metodun yoksa Referer kullanmaya devam edebiliriz 
+            // ama en garantisi budur:
+            await _imageService.DeleteImageAsync(id);
 
+            TempData["SuccessMessage"] = "Resim başarıyla kaldırıldı.";
+
+            // Request.Headers["Referer"] bazen güvenilmezdir. 
+            // Eğer resim silindikten sonra sayfa yenilenmiyorsa manuel yönlendirme en iyisidir.
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
         public async Task<IActionResult> DeleteTour(string id)
         {
             await _tourService.DeleteTourAsync(id);
@@ -160,36 +173,33 @@ namespace Project3Vitour.Controllers
         [HttpGet]
         public async Task<IActionResult> AddImage(string id)
         {
-            var tour = await _tourService.GetTourByIdAsync(id);
-            ViewBag.v = id;
-            ViewBag.tourTitle = tour.Title; // Tur adını buraya aldık
-            return View();
+            // Mevcut resimleri çek
+            var images = await _imageService.GetImagesByTourIdAsync(id);
+
+            // Resimleri ViewBag ile sayfaya gönder
+            ViewBag.CurrentImages = images;
+
+            var model = new CreateTourImageDto { TourId = id };
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddImage(CreateTourImageDto createTourImageDto)
         {
-            await _imageService.CreateImageAsync(createTourImageDto);
-            return RedirectToAction("TourList");
-        }
-        public async Task<IActionResult> ReservationList()
-        {
-            // 1. Tüm rezervasyonları çekiyoruz
-            var reservations = await _reservationService.GetAllReservationsAsync();
+            var currentImages = await _imageService.GetImagesByTourIdAsync(createTourImageDto.TourId);
 
-            // 2. Tüm turları çekiyoruz
-            var tours = await _tourService.GetAllTourAsync();
-
-            // 3. Rezervasyonların içine Tur Adlarını yerleştiriyoruz (Basit bir Join işlemi)
-            foreach (var res in reservations)
+            // Buradaki sınırı 6 yapmayı unutma, kodunda 100 kalmış
+            if (currentImages != null && currentImages.Count >= 6)
             {
-                var tour = tours.FirstOrDefault(x => x.TourId == res.TourId);
-                // ReservationDto içinde 'Description' veya 'TourName' gibi boş bir alanı 
-                // geçici olarak tur adını taşımak için kullanabiliriz.
-                res.Description = tour != null ? tour.Title : "Tur Bulunamadı";
+                TempData["ErrorMessage"] = "Maksimum fotoğraf limitine (6) ulaşıldı.";
+                return RedirectToAction("AddImage", new { id = createTourImageDto.TourId });
             }
 
-            return View(reservations);
+            await _imageService.CreateImageAsync(createTourImageDto);
+            TempData["SuccessMessage"] = "Görsel başarıyla galeriye eklendi.";
+
+            // BURASI KRİTİK: Seni kullanıcı sayfasına değil, admin resim ekleme sayfasına geri atmalı
+            return RedirectToAction("AddImage", new { id = createTourImageDto.TourId });
         }
         public async Task<IActionResult> DeleteReservation(string id)
         {

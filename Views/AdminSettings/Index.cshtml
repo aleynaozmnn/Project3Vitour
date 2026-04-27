@@ -1,0 +1,265 @@
+﻿@model Project3Vitour.Dtos.SettingsDtos.UpdateSettingsDto
+
+@{
+    ViewData["Title"] = "Ayarlar";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <style>
+        :root {
+            --brand-blue: #4f46e5;
+            --border-color: #e2e8f0;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+            .settings-card:hover {
+                border-color: var(--brand-blue);
+                box-shadow: 0 10px 25px rgba(79, 70, 229, 0.05);
+            }
+
+        .profile-upload {
+            width: 120px;
+            height: 120px;
+            border-radius: 30px;
+            background: #f8fafc;
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+            overflow: hidden; /* Resmin taşmaması için */
+        }
+
+            .profile-upload img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .profile-upload:hover {
+                border-color: var(--brand-blue);
+                background: #eef2ff;
+            }
+
+        .form-label {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+            .form-control:focus {
+                border-color: var(--brand-blue);
+                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+                outline: none;
+            }
+
+        .btn-save {
+            background: var(--brand-blue);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .btn-save:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+            }
+
+        .lang-card {
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .lang-card.active {
+                border-color: var(--brand-blue);
+                background: #f5f3ff;
+            }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    @* REVİZE: enctype="multipart/form-data" eklendi *@
+    <form asp-action="UpdateProfile" asp-controller="AdminSettings" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" name="SettingID" value="@(Model?.SettingID ?? "")" />
+        @* Mevcut resmin kaybolmaması için gizli bir alanda tutuyoruz *@
+        <input type="hidden" name="ImageUrl" value="@Model?.ImageUrl" />
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="settings-card shadow-sm">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="bg-primary text-white p-3 rounded-4">
+                            <i class="bi bi-person-badge-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold m-0">Profil Ayarları</h4>
+                            <p class="text-muted small m-0">Hesap ve site bilgilerini buradan güncelleyebilirsiniz.</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Profil Fotoğrafı</label>
+                            @* REVİZE: Resim varsa göster, yoksa ikon göster *@
+                            <div class="profile-upload" onclick="document.getElementById('fileInput').click();">
+                                @if (!string.IsNullOrEmpty(Model?.ImageUrl))
+                                {
+                                    <img src="@Model.ImageUrl" id="profilePreview" />
+                                }
+                                else
+                                {
+                                    <i class="bi bi-camera fs-2 text-muted" id="cameraIcon"></i>
+                                    <img src="#" id="profilePreview" style="display:none;" />
+                                }
+                                @* REVİZE: name="ImageFile" Controller'daki IFormFile ile eşleşmeli *@
+                                <input type="file" id="fileInput" name="ImageFile" class="d-none" accept="image/*" onchange="previewImage(this)">
+                            </div>
+                            <small class="text-muted">Değiştirmek için fotoğrafın üzerine tıklayın.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Ad Soyad</label>
+                            <input type="text" name="FullName" class="form-control" value="@Model?.FullName" placeholder="Adınız Soyadınız">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Kullanıcı Adı</label>
+                            <input type="text" name="Username" class="form-control" value="@Model?.Username" placeholder="Kullanıcı Adı">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">E-Posta Adresi</label>
+                            <input type="email" name="Email" class="form-control" value="@Model?.Email" placeholder="mail@vitour.com">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Telefon</label>
+                            <input type="text" name="Phone" class="form-control" value="@Model?.Phone" placeholder="+90 5XX XXX XX XX">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Site Başlığı (SEO)</label>
+                            <input type="text" name="SiteTitle" class="form-control" value="@Model?.SiteTitle" placeholder="Vitour - Turizm ve Seyahat">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Footer (Alt Bilgi) Metni</label>
+                            <textarea name="FooterText" class="form-control" rows="3" placeholder="© 2024 Vitour Tüm Hakları Saklıdır.">@Model?.FooterText</textarea>
+                        </div>
+
+                        <div class="col-12 mt-4 text-end">
+                            <button type="submit" class="btn-save">
+                                <i class="bi bi-check2-circle me-2"></i>Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="settings-card shadow-sm">
+                            <h6 class="fw-bold mb-3">Sistem Dili</h6>
+                            <div class="lang-card active mb-2">
+                                <span class="fs-4">🇹🇷</span>
+                                <div>
+                                    <div class="fw-bold small">Türkçe</div>
+                                    <div class="text-muted" style="font-size: 11px;">Varsayılan sistem dili</div>
+                                </div>
+                            </div>
+                            <div class="lang-card">
+                                <span class="fs-4">🇺🇸</span>
+                                <div>
+                                    <div class="fw-bold small">English</div>
+                                    <div class="text-muted" style="font-size: 11px;">Sistemi İngilizce kullan</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="settings-card shadow-sm">
+                            <h6 class="fw-bold mb-3">Güvenlik</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Mevcut Şifre</label>
+                                <input type="password" name="CurrentPassword" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Yeni Şifre</label>
+                                <input type="password" name="NewPassword" class="form-control">
+                            </div>
+                            <div class="alert alert-info py-2 small" style="border-radius: 10px;">
+                                <i class="bi bi-info-circle me-2"></i>Şifreniz en az 8 karakter olmalıdır.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Önizleme fonksiyonu: Dosya seçildiği an ekranda gösterir
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profilePreview').setAttribute('src', e.target.result);
+                    document.getElementById('profilePreview').style.display = 'block';
+                    if (document.getElementById('cameraIcon')) {
+                        document.getElementById('cameraIcon').style.display = 'none';
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Harika!',
+                        text: '@Html.Raw(TempData["SuccessMessage"])',
+                        confirmButtonColor: '#4f46e5',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                </text>
+        }
+    </script>
+}

@@ -1,4 +1,4 @@
-﻿namespace Project3Vitour.Dtos.TourDto
+﻿namespace Project3Vitour.Dtos.ImageDtos // Klasör adıyla aynı olmalı!
 {
     public class ResultTourImageDto
     {
