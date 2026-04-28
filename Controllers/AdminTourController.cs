@@ -254,6 +254,25 @@ namespace Project3Vitour.Controllers
                 }
             }
         }
+        public async Task<IActionResult> ReservationList()
+        {
+            // 1. Tüm rezervasyonları çekiyoruz
+            var reservations = await _reservationService.GetAllReservationsAsync();
+
+            // 2. Tüm turları çekiyoruz
+            var tours = await _tourService.GetAllTourAsync();
+
+            // 3. Rezervasyonların içine Tur Adlarını yerleştiriyoruz
+            foreach (var res in reservations)
+            {
+                var tour = tours.FirstOrDefault(x => x.TourId == res.TourId);
+                // ReservationDto içindeki Description alanına tur adını atıyoruz
+                res.Description = tour != null ? tour.Title : "Tur Bulunamadı";
+            }
+
+            // --- KRİTİK EKSİK BURASIYDI ---
+            return View(reservations);
+        }
 
         public async Task<IActionResult> ReservationDetail(string id)
         {

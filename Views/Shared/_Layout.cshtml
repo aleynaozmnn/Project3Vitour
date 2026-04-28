@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<Project3Vitour.SharedResource> SharedLocalizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,6 +10,19 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Project3Vitour.styles.css" asp-append-version="true" />
+    <style>
+        /* Tasarımı bozmadan dil butonunu güzelleştiren ek stil */
+        .language-dropdown .btn {
+            background-color: #ff5722 !important;
+            color: white !important;
+            border: none;
+            font-weight: 600;
+        }
+
+        .language-dropdown .dropdown-menu {
+            min-width: 100px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -20,12 +36,27 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                                @SharedLocalizer["Home"]
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                @SharedLocalizer["Privacy"]
+                            </a>
                         </li>
                     </ul>
+
+                    @* Şık Dil Değiştirme Menüsü *@
+                    <div class="dropdown language-dropdown">
+                        <button class="btn btn-sm dropdown-toggle" type="button" id="langSelector" data-bs-toggle="dropdown" aria-expanded="false">
+                            🌐 DİL / LANG
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="langSelector">
+                            <li><a class="dropdown-item" href="/Language/Change?culture=tr-TR">Türkçe</a></li>
+                            <li><a class="dropdown-item" href="/Language/Change?culture=en-US">English</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -38,13 +69,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - Project3Vitour - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - Project3Vitour - <a asp-area="" asp-controller="Home" asp-action="Privacy">@SharedLocalizer["Privacy"]</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    @await RenderSectionAsync("Styles", required: false)
 </body>
 </html>

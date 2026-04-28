@@ -1,168 +1,128 @@
-﻿ <!-- Main Header -->
-<header class="main-header flex">
-    <!-- Header Lower -->
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<Project3Vitour.SharedResource> SharedLocalizer
+
+<style>
+    /* TEST BUTONU STİLİ - Sayfanın ortasında dev gibi görünecek */
+    .emergency-language-btn {
+        display: block !important;
+        background-color: #ff5722 !important;
+        color: #fff !important;
+        padding: 20px !important;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin: 20px auto;
+        width: 300px;
+        border-radius: 10px;
+        text-decoration: none;
+        z-index: 999999;
+        border: 3px solid black;
+    }
+
+    /* Header içindeki normal buton stilleri */
+    #languageMenu {
+        display: flex !important;
+        align-items: center;
+        background-color: #ff5722 !important;
+        color: white !important;
+        padding: 8px 15px !important;
+        border-radius: 5px;
+        font-weight: bold;
+        min-width: 130px;
+        text-decoration: none;
+    }
+
+    .language:hover .dropdown-menu {
+        display: block !important;
+    }
+
+    .dropdown-menu {
+        background: white !important;
+        border: 1px solid #ccc !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+</style>
+
+<header class="main-header">
     <div id="header">
+        @* Üst Bilgi Satırı *@
         <div class="header-top">
             <div class="header-top-wrap flex-two">
                 <div class="header-top-right">
-                    <ul class=" flex-three">
-                        <li class="flex-three">
-                            <i class="icon-day"></i>
-                            <span>@DateTime.Now.ToShortDateString()</span>
-                        </li>
-                        <li class="flex-three">
-                            <i class="icon-mail"></i>
-                            <span>support@example.com</span>
-                        </li>
-                        <li class="flex-three">
-                            <i class="icon-phone"></i>
-                            <span>+90 500 400 30 20</span>
-                        </li>
-
-
+                    <ul class="flex-three">
+                        <li><i class="icon-day"></i> <span>@DateTime.Now.ToShortDateString()</span></li>
+                        <li><i class="icon-mail"></i> <span>support@example.com</span></li>
+                        <li><i class="icon-phone"></i> <span>+90 500 400 30 20</span></li>
                     </ul>
                 </div>
                 <div class="header-top-left flex-two">
-                    <a href="contact-us.html" class="booking">
-                        <i class="icon-19"></i>
-                        <span>Rezervasyon Yap</span>
-                    </a>
-                    <div class="follow-social flex-two">
-                        <span>Bizi Takip Edin :</span>
-                        <ul class="flex-two">
-                            <li><a href="#"><i class="icon-icon-2"></i></a></li>
-                            <li><a href="#"><i class="icon-icon_03"></i></a></li>
-                            <li><a href="#"><i class="icon-x"></i></a></li>
-                            <li><a href="#"><i class="icon-icon"></i></a></li>
-                        </ul>
-                    </div>
-
+                    <a href="#" class="booking"><i class="icon-19"></i> <span>Rezervasyon</span></a>
                 </div>
             </div>
-
         </div>
+
+        @* Ana Menü Satırı *@
         <div class="header-lower">
             <div class="tf-container full">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="inner-container flex justify-space align-center">
-                            <!-- Logo Box -->
-                            <div class="mobile-nav-toggler mobie-mt mobile-button">
-                                <i class="icon-Vector3"></i>
-                            </div>
-                            <div class="logo-box">
-                                <div class="logo">
-                                    <a href="index.html">
-                                        <img src="/vitour/assets/images/logo.png" alt="Logo">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="nav-outer flex align-center">
-                                <!-- Main Menu -->
-                                <nav class="main-menu show navbar-expand-md">
-                                    <div class="navbar-collapse collapse clearfix"
-                                         id="navbarSupportedContent">
-                                        <ul class="navigation clearfix">
-                                            <li><a href="#">Ana Sayfa</a></li>
+                <div class="inner-container flex justify-space align-center">
 
-                                            <li class="current"><a href="/AdminTour/Index">Patron Paneli</a></li>
-                                            <li><a href="/AdminTour/ReservationList">Rezervasyonlar</a></li>
-
-                                            <li><a href="#">Kültür Turları</a></li>
-                                            <li><a href="#">Rehberlerimiz</a></li>
-                                        </ul>
-                                    </div>
-                                </nav>
-                                <!-- Main Menu End-->
-                            </div>
-                            <div class="header-account flex align-center">
-                                <div class="language">
-                                    <div class="nice-select" tabindex="0">
-                                        <img src="/vitour/assets/images/page/language.svg" alt=""><span class="current">English</span>
-                                        <ul class="list">
-                                            <li data-value class="option selected">
-                                                <img src="/vitour/assets/images/page/language.svg" alt="">English
-                                            </li>
-                                            <li data-value="Vietnam" class="option">
-                                                <img src="/vitour/assets/images/page/language.svg" alt="">Vietnam
-                                            </li>
-                                            <li data-value="German" class="option">
-                                                <img src="/vitour/assets/images/page/language.svg" alt="">German
-                                            </li>
-                                            <li data-value="Russian" class="option">
-                                                <img src="/vitour/assets/images/page/language.svg" alt="">Russian
-                                            </li>
-                                            <li data-value="Canada" class="option">
-                                                <img src="/vitour/assets/images/page/language.svg" alt="">Canada
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="currency">
-                                    <div class="nice-select" tabindex="0">
-                                        <span class="current">USD</span>
-                                        <ul class="list">
-                                            <li data-value class="option selected">USD</li>
-                                            <li data-value="vnd" class="option">VND</li>
-                                            <li data-value="eur" class="option">EUR</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="search-mobie relative">
-                                    <div class="dropdown">
-                                        <a type="button" class="show-search" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="icon-Vector5"></i>
-                                        </a>
-                                        <ul class="dropdown-menu top-search">
-                                            <form action="/" id="search-bar-widget">
-                                                <input type="text" placeholder="Aranacak kelime">
-                                                <button type="button"><i class="icon-search-2"></i></button>
-                                            </form>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="register">
-                                    <ul class="flex align-center">
-                                        <li class="">
-                                            <a href="login.html">
-                                                <i class="icon-user-1-1"></i>
-                                                <span>Giriş Yap</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="logo-box">
+                        <div class="logo">
+                            <a href="/"><img src="/vitour/assets/images/logo.png" alt="Logo"></a>
                         </div>
+                    </div>
+
+                    @* Orta Menü *@
+                    <div class="nav-outer">
+                        <nav class="main-menu navbar-expand-md">
+                            <ul class="navigation clearfix">
+                                <li><a href="/">Anasayfa</a></li>
+                                <li><a href="/AdminTour/Index">Patron Paneli</a></li>
+                                <li><a href="/AdminTour/ReservationList">Rezervasyonlar</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    @* Sağ Taraf: DİL VE GİRİŞ *@
+                    <div class="header-account flex align-center">
+
+                        @* 1. DİL BUTONU (Header İçindeki) *@
+                        <div class="language dropdown" style="margin-right: 20px;">
+                            <a id="languageMenu" class="dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <img src="/vitour/assets/images/page/language.svg" style="width:18px; margin-right:8px;">
+                                <span>DİL DEĞİŞTİR</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/Language/Change?culture=tr-TR">Türkçe</a></li>
+                                <li><a class="dropdown-item" href="/Language/Change?culture=en-US">English</a></li>
+                            </ul>
+                        </div>
+
+                        @* 2. GİRİŞ YAP *@
+                        <div class="register">
+                            <a href="/Login/Index" class="flex align-center">
+                                <i class="icon-user-1-1"></i>
+                                <span>Giriş Yap</span>
+                            </a>
+                        </div>
+
                     </div>
                 </div>
             </div>
-            <img src="./assets/images/page/fl1.png" alt="" class="fly-ab">
         </div>
     </div>
-
-    <!-- End Header Lower -->
-    <a href="#" class="header-sidebar flex-three" data-bs-toggle="offcanvas"
-       data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-        <i class="icon-Bars"></i>
-    </a>
-
-    <!-- Mobile Menu  -->
-    <div class="close-btn"><span class="icon flaticon-cancel-1"></span></div>
-    <div class="mobile-menu">
-        <div class="menu-backdrop"></div>
-        <nav class="menu-box">
-            <div class="nav-logo">
-                <a href="index.html">
-                    <img src="/vitour/assets/images/logo2.png" alt="">
-                </a>
-            </div>
-            <div class="bottom-canvas">
-                <div class="menu-outer">
-                </div>
-            </div>
-        </nav>
-    </div>
-    <!-- End Mobile Menu -->
-
 </header>
- 
+
+@* --- SAYFANIN ORTASINA ZORLA KOYDUĞUMUZ TEST BUTONU --- *@
+<div style="text-align: center; width: 100%; clear: both; padding-top: 20px;">
+    <p>Header'da göremiyorsan buna bas:</p>
+    <div class="dropdown" style="display: inline-block;">
+        <a href="#" class="emergency-language-btn" data-bs-toggle="dropdown">
+            BURADAN DİL DEĞİŞTİR
+        </a>
+        <ul class="dropdown-menu" style="width: 100%; text-align: center;">
+            <li><a class="dropdown-item" href="/Language/Change?culture=tr-TR" style="font-size: 20px; padding: 10px;">TÜRKÇE</a></li>
+            <li><a class="dropdown-item" href="/Language/Change?culture=en-US" style="font-size: 20px; padding: 10px;">ENGLISH</a></li>
+        </ul>
+    </div>
+</div>

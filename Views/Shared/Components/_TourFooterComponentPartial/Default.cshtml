@@ -1,5 +1,6 @@
-﻿
-
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<Project3Vitour.SharedResource> SharedLocalizer
+@inject IViewLocalizer Localizer
 <footer class="footer footer-style1">
     <div class="tf-container">
         <div class="footer-main">
@@ -11,31 +12,27 @@
                 </div>
 
                 <p class="des-footer">
-                    Dünyayı keşfetmeniz için güvenli, konforlu ve
-                    profesyonel tur hizmetleri sunuyoruz.
+                    @SharedLocalizer["Footer_Description"]
                 </p>
 
                 <ul class="footer-info">
                     <li><p>Info@vitour.com</p></li>
                     <li><p>+90 212 555 01 02</p></li>
-                    <li><p>Bağdat Caddesi No:123 Kadıköy / İstanbul</p></li>
+                    <li><p>@SharedLocalizer["Footer_Address"]</p></li>
                 </ul>
             </div>
 
             <!-- KURUMSAL -->
             <div class="footer-service">
-                <h5 class="title">Kurumsal</h5>
-                <ul class="footer-menu">
-                    <li><a href="#">Hakkımızda</a></li>
-                    <li><a href="#">Galeri</a></li>
-                    <li><a href="#">Ekibimiz</a></li>
-                    <li><a href="#">Blog Yazıları</a></li>
-                    <li><a href="#">İletişim</a></li>
+                <h5 class="title">@SharedLocalizer["Footer_QuickLinks"]</h5> <ul class="footer-menu">
+                    <li><a href="#">@SharedLocalizer["Footer_AboutTitle"]</a></li>
+                    <li><a href="#">@SharedLocalizer["Tab_Gallery"]</a></li>
+                    <li><a href="#">@SharedLocalizer["Footer_Contact"]</a></li>
                 </ul>
             </div>
 
             <div class="footer-gallery">
-                <h5 class="title">Galeri</h5>
+                <h5 class="title">@Localizer["Gallery"]</h5>
 
                 <div class="gallery-img">
                     <a href="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=1200&auto=format&fit=crop" data-fancybox="gallery">

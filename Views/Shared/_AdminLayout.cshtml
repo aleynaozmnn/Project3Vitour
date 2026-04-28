@@ -1,4 +1,8 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<Project3Vitour.SharedResource> SharedLocalizer
+@{
     Layout = null;
 }
 
@@ -160,53 +164,57 @@
             </div>
 
             <nav class="ap-nav">
-                <div class="ap-nav-label">GENEL YÖNETİM</div>
+                <div class="ap-nav-label">@SharedLocalizer["GeneralMgmt"]</div>
 
                 <a href="/AdminTour/Index" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminTour" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
-                    <i class="bi bi-speedometer2"></i> Kontrol Paneli
+                    <i class="bi bi-speedometer2"></i> @SharedLocalizer["Dashboard"]
                 </a>
 
                 <a href="/AdminTour/TourList" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminTour" && ViewContext.RouteData.Values["Action"]?.ToString() == "TourList" ? "active" : "")">
-                    <i class="bi bi-map"></i> Tur Paketleri
+                    <i class="bi bi-map"></i> @SharedLocalizer["Menu_Tours"]
                 </a>
 
                 <a href="/AdminTour/ReservationList" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminTour" && ViewContext.RouteData.Values["Action"]?.ToString() == "ReservationList" ? "active" : "")">
-                    <i class="bi bi-calendar-check"></i> Rezervasyonlar
+                    <i class="bi bi-calendar-check"></i> @SharedLocalizer["Menu_Reservations"]
                 </a>
 
-                @* TEK VE DOĞRU KATEGORİ LİNKİ *@
+               
                 <a href="/Category/CreateCategory" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")">
-                    <i class="bi bi-tags"></i> Kategori Yönetimi
+                    <i class="bi bi-tags"></i>@SharedLocalizer["CategoryMgmt"]
                 </a>
 
-                @* GÜNCELLENMİŞ VE TAM UYUMLU DESTİNASYON LİNKİ *@
+              
                 <a href="/Destination/Index" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Destination" ? "active" : "")">
-                    <i class="bi bi-geo-alt-fill"></i> Destinasyon Yönetimi
+                    <i class="bi bi-geo-alt-fill"></i> @SharedLocalizer["DestMgmt"]
                 </a>
 
-                @* YORUMLAR LİNKİ - Sadece ReviewController içindeyken aktif olur *@
+                
                 <a href="/Review/ReviewList" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Review" ? "active" : "")">
-                    <i class="bi bi-chat-left-text"></i> Yorumlar
+                    <i class="bi bi-chat-left-text"></i>@SharedLocalizer["Reviews"]
                 </a>
 
-                <div class="ap-nav-label">SİSTEM AYARLARI</div>
+                <div class="ap-nav-label">@SharedLocalizer["SystemSettings"]</div>
 
                 <a href="/AdminSettings/Index" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminSettings" ? "active" : "")">
-                    <i class="bi bi-gear-fill"></i> Ayarlar
+                    <i class="bi bi-gear-fill"></i> @SharedLocalizer["SystemSettings"]
                 </a>
             </nav>
 
             <div class="ap-sidebar-footer">
                 <a href="/Account/Logout" class="ap-nav-item" style="margin-bottom: 0;">
-                    <i class="bi bi-box-arrow-left"></i> Çıkış Yap
+                    <i class="bi bi-box-arrow-left"></i> @SharedLocalizer["Logout"]
                 </a>
             </div>
         </aside>
 
         <div class="ap-main">
-            <header class="ap-topbar">
+            <header class="ap-topbar d-flex justify-content-between align-items-center">
                 <div style="font-size: 14px; font-weight: 500; color: var(--ink-60);">
                     Ana Sayfa / <span style="color: var(--ink);">@ViewData["Title"]</span>
+                </div>
+                <div class="pe-4">
+                    <a href="/Language/Change?culture=tr-TR" class="btn btn-sm btn-outline-primary">TR</a>
+                    <a href="/Language/Change?culture=en-US" class="btn btn-sm btn-outline-secondary">EN</a>
                 </div>
             </header>
 

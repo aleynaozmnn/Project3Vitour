@@ -12,10 +12,19 @@ using Project3Vitour.Services.TourPlanServices;
 using Project3Vitour.Services.TourServices;
 using Project3Vitour.Settings;
 using System.Reflection;
+using System.Globalization; // Yeni: Dil ayarlarý için
+using Microsoft.AspNetCore.Localization; // Yeni: Localization için
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- YENÝ: Kimlik Doðrulama (Authentication) Servisi Eklendi ---
+// --- 1. LOCALIZATION SERVÝSLERÝ (YENÝ) ---
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization() // View'larda yerelleþtirme için
+    .AddDataAnnotationsLocalization(); // Model validation'lar için
+
+// --- Kimlik Doðrulama (Authentication) ---
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -26,8 +35,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     });
 
+// --- Diðer Servisler ---
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddControllersWithViews().AddViewLocalization();
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingKey"));
 builder.Services.AddScoped<IReservationService, ReservationService>();
@@ -42,9 +55,25 @@ builder.Services.AddScoped<IDatabaseSettings>(sp =>
 });
 builder.Services.AddScoped<IImageService, ImageService>();
 
-builder.Services.AddControllersWithViews();
-
 var app = builder.Build();
+
+// --- 2. DÝL DESTEÐÝ YAPILANDIRMASI (YENÝ - CASE GEREKSÝNÝMÝ) ---
+var supportedCultures = new[] {
+    new CultureInfo("tr-TR"),
+    new CultureInfo("en-US")
+};
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("tr-TR"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures,
+    RequestCultureProviders = new List<IRequestCultureProvider>
+    {
+        new CookieRequestCultureProvider(), // Case'de istenen Cookie tabanlý yönetim
+        new QueryStringRequestCultureProvider()
+    }
+});
 
 if (!app.Environment.IsDevelopment())
 {
@@ -57,9 +86,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// --- YENÝ: Authentication ve Authorization Sýralamasý Düzenlendi ---
-app.UseAuthentication(); // Önce kimlik kontrolü
-app.UseAuthorization();  // Sonra yetki kontrolü
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

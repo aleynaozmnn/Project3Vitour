@@ -7,7 +7,7 @@
 
 @section Styles {
     <style>
-        /* Senin mevcut CSS kodların aynen kalabilir, hepsi çok şık. */
+        /* Senin mevcut CSS kodların */
         .ap-stat-card {
             background: #fff;
             border: 1px solid #e2e8f0;
@@ -16,11 +16,13 @@
             height: 100%;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .ap-stat-card:hover {
-            transform: translateY(-8px);
-            border-color: #4f46e5 !important;
-            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08) !important;
-        }
+
+            .ap-stat-card:hover {
+                transform: translateY(-8px);
+                border-color: #4f46e5 !important;
+                box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08) !important;
+            }
+
         .ap-icon-circle {
             width: 48px;
             height: 48px;
@@ -31,9 +33,48 @@
             margin-bottom: 20px;
             transition: all 0.3s ease;
         }
-        .progress { background-color: #f1f5f9; border-radius: 10px; overflow: hidden; }
-        .table-hover tbody tr:hover { background-color: rgba(79, 70, 229, 0.03) !important; box-shadow: inset 4px 0 0 #4f46e5; }
-        .btn-light.border:hover { background-color: #4f46e5 !important; color: white !important; }
+
+        .progress {
+            background-color: #f1f5f9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(79, 70, 229, 0.03) !important;
+            box-shadow: inset 4px 0 0 #4f46e5;
+        }
+
+        .btn-light.border:hover {
+            background-color: #4f46e5 !important;
+            color: white !important;
+        }
+
+        /* Tabloyu Sınırlayan Konteyner (Revize Edilen Kısım) */
+        .table-scroll-container {
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+            /* Başlıkları Kaydırırken Sabit Tutma */
+            .table-scroll-container thead {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+                background: white;
+            }
+
+            /* Scrollbar tasarımı */
+            .table-scroll-container::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .table-scroll-container::-webkit-scrollbar-thumb {
+                background-color: #cbd5e1;
+                border-radius: 10px;
+            }
     </style>
 }
 
@@ -91,49 +132,51 @@
         <span class="badge bg-light text-dark border px-3 py-2 rounded-pill small">Toplam @ViewBag.TotalTours Destinasyon</span>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="text-muted small">
-                <tr>
-                    <th class="border-0">DESTİNASYON</th>
-                    <th class="border-0">BİRİM FİYAT</th>
-                    <th class="border-0">KONTENJAN</th>
-                    <th class="border-0" style="width: 30%;">DOLULUK</th>
-                    <th class="border-0 text-end">İŞLEM</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    // Her tur için doluluk yüzdesini hesaplıyoruz
-                    double occupancyRate = item.Capacity > 0 
-                        ? (double)item.CurrentReservationCount / item.Capacity * 100 
+    @* SARMALAYICI DIV BURAYA EKLENDİ *@
+    <div class="table-scroll-container">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="text-muted small">
+                    <tr>
+                        <th class="border-0">DESTİNASYON</th>
+                        <th class="border-0">BİRİM FİYAT</th>
+                        <th class="border-0">KONTENJAN</th>
+                        <th class="border-0" style="width: 30%;">DOLULUK</th>
+                        <th class="border-0 text-end">İŞLEM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        double occupancyRate = item.Capacity > 0
+                        ? (double)item.CurrentReservationCount / item.Capacity * 100
                         : 0;
 
-                    <tr>
-                        <td class="py-3">
-                            <div class="fw-bold text-dark">@item.Title</div>
-                            <div class="text-muted" style="font-size: 11px;">@item.Badge</div>
-                        </td>
-                        <td class="fw-bold text-primary">₺@item.Price.ToString("N0")</td>
-                        <td class="small fw-bold">@item.CurrentReservationCount / @item.Capacity</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="progress w-100" style="height: 8px;">
-                                    <div class="progress-bar @(occupancyRate >= 90 ? "bg-danger" : (occupancyRate >= 50 ? "bg-primary" : "bg-success"))" 
-                                         role="progressbar" 
-                                         style="width: @occupancyRate.ToString("0")%"></div>
+                        <tr>
+                            <td class="py-3">
+                                <div class="fw-bold text-dark">@item.Title</div>
+                                <div class="text-muted" style="font-size: 11px;">@item.Badge</div>
+                            </td>
+                            <td class="fw-bold text-primary">₺@item.Price.ToString("N0")</td>
+                            <td class="small fw-bold">@item.CurrentReservationCount / @item.Capacity</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="progress w-100" style="height: 8px;">
+                                        <div class="progress-bar @(occupancyRate >= 90 ? "bg-danger" : (occupancyRate >= 50 ? "bg-primary" : "bg-success"))"
+                                             role="progressbar"
+                                             style="width: @occupancyRate.ToString("0")%"></div>
+                                    </div>
+                                    <span class="small fw-bold text-muted">%@occupancyRate.ToString("0")</span>
                                 </div>
-                                <span class="small fw-bold text-muted">%@occupancyRate.ToString("0")</span>
-                            </div>
-                        </td>
-                        <td class="text-end">
-                            <a href="/AdminTour/UpdateTour/@item.TourId" class="btn btn-sm btn-light border fw-bold px-3" style="border-radius: 8px;">Detay</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                            </td>
+                            <td class="text-end">
+                                <a href="/AdminTour/UpdateTour/@item.TourId" class="btn btn-sm btn-light border fw-bold px-3" style="border-radius: 8px;">Detay</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

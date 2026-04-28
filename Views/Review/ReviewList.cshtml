@@ -7,13 +7,29 @@
 
 @section Styles {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    @* DataTables CSS *@
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <style>
         :root {
             --brand-blue: #4f46e5;
             --soft-blue: rgba(79, 70, 229, 0.05);
         }
 
-        /* Üst Şerit Kartları */
+        /* DataTables Özelleştirme */
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--brand-blue) !important;
+            color: white !important;
+            border-radius: 8px;
+            border: none;
+        }
+
+        .dataTables_filter input {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 6px 12px;
+            outline: none;
+        }
+
         .scrolling-wrapper {
             display: flex;
             flex-wrap: nowrap;
@@ -31,7 +47,6 @@
             flex: 0 0 auto;
         }
 
-        /* --- TABLO SÜTUNLARINI SABİTLEME --- */
         .res-table {
             table-layout: fixed !important;
             width: 100%;
@@ -59,13 +74,11 @@
 
         .res-table tbody tr {
             transition: all 0.2s ease;
-            cursor: pointer;
             border-bottom: 1px solid #f1f5f9;
         }
 
             .res-table tbody tr:hover {
                 background-color: var(--soft-blue) !important;
-                box-shadow: inset 4px 0 0 var(--brand-blue);
             }
 
         .user-avatar {
@@ -140,9 +153,9 @@
         </div>
     }
 
-    <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="background: white;">
+    <div class="card shadow-sm border-0 rounded-4 p-3" style="background: white;">
         <div class="table-responsive">
-            <table class="table res-table m-0 align-middle">
+            <table id="reviewTable" class="table res-table m-0 align-middle">
                 <thead class="bg-light text-muted small">
                     <tr>
                         <th class="ps-4 py-3 col-gezgin">GEZGİN</th>
@@ -204,11 +217,30 @@
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @* DataTables JS *@
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
+        $(document).ready(function () {
+            $('#reviewTable').DataTable({
+                "pageLength": 10,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": [1, 4] } // Yorum detayı ve işlemler sütununda sıralamayı kapat
+                ],
+                "dom": '<"d-flex justify-content-between align-items-center mb-3"fl>rt<"d-flex justify-content-between align-items-center mt-3"ip>'
+            });
+        });
+
         function showFullReview(user, text) {
             Swal.fire({ title: user, text: text, icon: 'info', confirmButtonColor: '#4f46e5' });
         }
+
         function deleteReview(id) {
             Swal.fire({
                 title: 'Emin misiniz?',

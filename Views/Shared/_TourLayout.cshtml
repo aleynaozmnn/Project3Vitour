@@ -7,6 +7,22 @@
 
 <body>
 
+
+    
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 999999;">
+        <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                    style="background: rgba(255, 87, 34, 0.9); color: white; font-weight: 600; border-radius: 30px; padding: 10px 20px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px); transition: all 0.3s;">
+                <i class="icon-globe"></i> 🌐 @Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToUpper()
+            </button>
+            <ul class="dropdown-menu shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
+                <li><a class="dropdown-item" href="/Language/Change?culture=tr-TR" style="padding: 10px 20px;">🇹🇷 Türkçe</a></li>
+                <li><a class="dropdown-item" href="/Language/Change?culture=en-US" style="padding: 10px 20px;">🇺🇸 English</a></li>
+            </ul>
+        </div>
+    </div>
+     
+
     @RenderBody()
 
     @await Component.InvokeAsync("_TourFooterComponentPartial")

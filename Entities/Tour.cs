@@ -19,5 +19,8 @@ namespace Project3Vitour.Entities
         public bool IsStatus { get; set; }
         public List<string> Images { get; set; }
         public string CategoryId { get; set; }
+        public string TitleEN { get; set; }
+        public string DescriptionEN { get; set; }
+
     }
 }

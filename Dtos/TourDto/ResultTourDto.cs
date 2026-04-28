@@ -13,5 +13,8 @@
         public bool IsStatus { get; set; }
         public int CurrentReservationCount { get; set; }
         public string CategoryId { get; set; }
+        public String TitleEN { get; set; } 
+
+        public String DescriptionEN { get; set; }
     }
 }

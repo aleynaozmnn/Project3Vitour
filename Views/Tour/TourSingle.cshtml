@@ -5,6 +5,20 @@
 @{
     Layout = "~/Views/Shared/_TourLayout.cshtml";
 }
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<Project3Vitour.SharedResource> SharedLocalizer
+
+@* Dil Değiştirme Butonları *@
+<div style="position: absolute; right: 20px; top: 20px; z-index: 9999; display: flex; gap: 10px;">
+    <a href="/Language/Change?culture=tr-TR"
+       style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: white; padding: 5px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; border: 1px solid rgba(255,255,255,0.3); font-size: 14px;">
+        TR
+    </a>
+    <a href="/Language/Change?culture=en-US"
+       style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: white; padding: 5px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; border: 1px solid rgba(255,255,255,0.3); font-size: 14px;">
+        EN
+    </a>
+</div>
 
 <style>
     /* Galeri Grid Yapısı */
