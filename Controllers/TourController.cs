@@ -139,9 +139,10 @@ namespace Project3Vitour.Controllers
            
             try
             {
-                string subject = "Rezervasyon Onayı-Vitour Seyehat";
-                // Satır başlarındaki boşlukları sıfırlayarak yazıyoruz:
+                string subject = "Rezervasyon Onayı - Vitour Seyahat";
+
                 string participantNote = "";
+                // Eğer 1'den fazla kişiyse VE açıklama girildiyse nota ekle
                 if (createReservationDto.PersonCount > 1 && !string.IsNullOrEmpty(createReservationDto.Description))
                 {
                     participantNote = $"\nEk Katılımcı Bilgileri: {createReservationDto.Description}";
@@ -150,7 +151,7 @@ namespace Project3Vitour.Controllers
                 string body = $"Merhaba {createReservationDto.NameSurname},\n\n" +
                               $"{tour.Title} turu için rezervasyonunuz başarıyla alınmıştır.\n" +
                               $"Kişi Sayısı: {createReservationDto.PersonCount}" +
-                              $"{participantNote}\n\n" + // Not varsa buraya eklenecek
+                              $"{participantNote}\n\n" +
                               "Keyifli yolculuklar dileriz!";
                 _mailService.SendMail(createReservationDto.Email, subject, body);
 
