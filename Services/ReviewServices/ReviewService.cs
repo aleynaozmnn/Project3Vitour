@@ -56,7 +56,9 @@ namespace Project3Vitour.Services.ReviewServices
         }
         public async Task ApproveReviewAsync(string id)
         {
+            //Hangi yorum bul
             var filter = Builders<Review>.Filter.Eq(x => x.ReviewId, id);
+            //Statusu ne yapılacak/t,f
             var update = Builders<Review>.Update.Set(x => x.Status, true);
             await _reviewCollection.UpdateOneAsync(filter, update);
         }

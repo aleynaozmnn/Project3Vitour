@@ -12,7 +12,6 @@
             --border-color: #e2e8f0;
         }
 
-        /* Sayfa Başlığı ve Banner */
         .header-section {
             background: white;
             border-radius: 24px;
@@ -22,31 +21,29 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
 
-        /* --- TABLO KONTROLÜ VE KAYDIRMA --- */
         .res-card {
             background: white;
             border-radius: 24px;
             border: 1px solid var(--border-color);
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
-            /* Sayfanın aşırı uzamasını engellemek için max-height ekledik */
             max-height: 700px;
             display: flex;
             flex-direction: column;
         }
 
         .table-responsive {
-            overflow-y: auto; /* Dikey kaydırma aktif */
+            overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #cbd5e1 transparent;
         }
 
-        /* Sütun Genişliklerini Sabitleme */
         .res-table {
             table-layout: fixed !important;
             width: 100%;
             margin-bottom: 0;
         }
 
+        /* Sütun genişlikleri */
         .col-gezgin {
             width: 22%;
         }
@@ -71,9 +68,8 @@
             width: 14%;
         }
 
-        /* --- MAVİMSİ İNTERAKTİF EFEKTLER --- */
         .res-table thead {
-            position: sticky; /* Başlık kayarken yukarıda sabit kalır */
+            position: sticky;
             top: 0;
             z-index: 10;
             background: #f8fafc;
@@ -88,16 +84,10 @@
                 border-bottom: 2px solid #f1f5f9;
             }
 
-        .res-table tbody tr {
-            transition: all 0.2s ease;
-            border-bottom: 1px solid #f1f5f9;
+        .res-table tbody tr:hover {
+            background-color: var(--soft-blue) !important;
+            box-shadow: inset 4px 0 0 var(--brand-blue);
         }
-
-            /* Hover: Mavi Vurgu ve Sol Şerit */
-            .res-table tbody tr:hover {
-                background-color: var(--soft-blue) !important;
-                box-shadow: inset 4px 0 0 var(--brand-blue);
-            }
 
         .user-avatar {
             width: 40px;
@@ -113,12 +103,6 @@
             transition: 0.3s;
         }
 
-        tr:hover .user-avatar {
-            background: var(--brand-blue);
-            color: white;
-            transform: scale(1.1);
-        }
-
         .tour-badge {
             display: inline-flex;
             align-items: center;
@@ -132,7 +116,6 @@
             border: 1px solid #ffedd5;
         }
 
-        /* İşlem Butonları */
         .action-btn {
             width: 36px;
             height: 36px;
@@ -144,6 +127,7 @@
             border: 1px solid #e2e8f0;
             background: white;
             color: #64748b;
+            cursor: pointer;
         }
 
         .btn-export:hover {
@@ -236,9 +220,10 @@
                                     <a href="/AdminTour/ReservationDetail/@item.ReservationId" class="action-btn btn-details" title="Detay">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="/AdminTour/DeleteReservation/@item.ReservationId" class="action-btn btn-delete" title="Sil">
+                                    @* Silme Butonu Değiştirildi *@
+                                    <button type="button" onclick="confirmDelete('@item.ReservationId')" class="action-btn btn-delete" title="Sil">
                                         <i class="bi bi-trash3"></i>
-                                    </a>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -248,3 +233,42 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @* SweetAlert CDN eklemesi *@
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu rezervasyon kalıcı olarak silinecektir!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Evet, Sil!',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/AdminTour/DeleteReservation/" + id;
+                }
+            })
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            @if (TempData["SuccessMessage"] != null)
+            {
+                    <text>
+                    Swal.fire({
+                        title: 'Başarılı!',
+                        text: '@TempData["SuccessMessage"]',
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    </text>
+            }
+        });
+    </script>
+}

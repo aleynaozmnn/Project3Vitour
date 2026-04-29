@@ -23,7 +23,6 @@ namespace Project3Vitour.Services.TourServices
         {
             var values = _mapper.Map<Tour>(createTourDto);
             await _tourCollection.InsertOneAsync(values);
-            
         }
 
         public async Task DeleteTourAsync(string id)

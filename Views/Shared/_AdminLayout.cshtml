@@ -193,10 +193,12 @@
                     <i class="bi bi-chat-left-text"></i>@SharedLocalizer["Reviews"]
                 </a>
 
-                <div class="ap-nav-label">@SharedLocalizer["SystemSettings"]</div>
+                @* Menü Grubu Başlığı (Gri küçük yazı) *@
+                <div class="ap-nav-label">@SharedLocalizer["SystemManagement"]</div>
 
+                @* Ayarlar Linki (Tıklanabilir menü öğesi) *@
                 <a href="/AdminSettings/Index" class="ap-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminSettings" ? "active" : "")">
-                    <i class="bi bi-gear-fill"></i> @SharedLocalizer["SystemSettings"]
+                    <i class="bi bi-gear-fill"></i> @SharedLocalizer["Settings"]
                 </a>
             </nav>
 

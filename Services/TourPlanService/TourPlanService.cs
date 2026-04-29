@@ -16,7 +16,6 @@ namespace Project3Vitour.Services.TourPlanService
         {
             var client=new MongoClient(databaseSettings.ConnectionString);
             var database = client.GetDatabase(databaseSettings.DatabaseName);
-            // _tourPlanCollection = database.GetCollection<TourPlan>(databaseSettings.TourPlanCollectionName);
             _tourPlanCollection = database.GetCollection<TourPlan>("TourPlans");
             _mapper = mapper;
         }
@@ -30,6 +29,8 @@ namespace Project3Vitour.Services.TourPlanService
         }
         public async Task CreateTourPlanAsync(CreateTourPlanDto createTourPlanDto)
         {
+            /*CreateTourPlan içindkei verileri alıp,db nesnesi TourPlan'a kopyalar.
+             InsertOneAsync ile tek hamlede mongodb'ye fırlator*/
             var value = _mapper.Map<TourPlan>(createTourPlanDto);
             await _tourPlanCollection.InsertOneAsync(value);
         }
@@ -41,13 +42,16 @@ namespace Project3Vitour.Services.TourPlanService
         public async Task UpdateTourPlanAsync(UpdateTourPlanDto updateTourPlanDto)
         {
             var value = _mapper.Map<TourPlan>(updateTourPlanDto);
-            // MongoDB'de TourPlanId'si eşleşen dökümanı yeni "value" ile değiştiriyoruz.
+            /*FindOneAndReplaceAsync: Gidip ilgili id ye sahip planı bulur ve 
+            veritabanındaki halini, benim gönderdiğim yeni value nesnesiyle tamamen değiştirir.*/
             await _tourPlanCollection.FindOneAndReplaceAsync(x => x.TourPlanId == updateTourPlanDto.TourPlanId, value);
         }
 
         public async Task<UpdateTourPlanDto> GetByIdTourPlanAsync(string id)
         {
             var value = await _tourPlanCollection.Find(x => x.TourPlanId == id).FirstOrDefaultAsync();
+            /*AutoMapper, eğer isimler aynıysa
+            (her iki tarafta da Title varsa) onları otomatik eşleştirir.*/
             return _mapper.Map<UpdateTourPlanDto>(value);
         }
 

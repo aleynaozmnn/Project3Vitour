@@ -16,6 +16,7 @@ namespace Project3Vitour.Services.CategoryServices
         {
             var client = new MongoClient(_databaseSettings.ConnectionString);//client connectionstringi tutuyor artık
             var database = client.GetDatabase(_databaseSettings.DatabaseName);
+            //_categorycollection->MongoDB'deki categoriese doğrudan erişim sağlar.
             _categorycollection = database.GetCollection<Category>(_databaseSettings.CategoryCollectionName);
             _mapper = mapper;
         }
@@ -33,7 +34,7 @@ namespace Project3Vitour.Services.CategoryServices
 
         public async Task<List<ResultCategoryDto>> GetAllCategoryAsync()
         {
-            //Ekleme ve güncelleme de mapleme önnce yapılır
+            //Db den gelen ham entity verisimi kullanıcıya gösterilecek DTO listesine çevirir.Tek tek Name=x.Name yazmaktan kurtulurum
             var values=await _categorycollection.Find(x=>true).ToListAsync(); //Şartı sağlayan her şeyi getirir
             return _mapper.Map<List<ResultCategoryDto>>(values);
         }

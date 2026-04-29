@@ -10,8 +10,6 @@ namespace Project3Vitour.Services.ReservationService
         Task<int> GetTotalPersonCountByTourIdAsync(string tourId);
         Task<List<ResultReservationDto>> GetAllReservationsAsync();
         Task DeleteReservationAsync(string id);
-
-        
         Task<ResultReservationDto> GetReservationByIdAsync(string id);
     }
 }

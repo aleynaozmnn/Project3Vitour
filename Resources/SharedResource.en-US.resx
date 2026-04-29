@@ -210,4 +210,7 @@
   <data name="GeneralMgmt" xml:space="preserve">
     <value>GENERAL MANAGEMENT</value>
   </data>
+  <data name="SystemManagement" xml:space="preserve">
+    <value>System Management</value>
+  </data>
 </root>

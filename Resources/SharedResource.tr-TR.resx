@@ -210,4 +210,7 @@
   <data name="GeneralMgmt" xml:space="preserve">
     <value>GENEL YÖNETİM</value>
   </data>
+  <data name="SystemManagement" xml:space="preserve">
+    <value>SİSTEM YÖNETİMİ</value>
+  </data>
 </root>

@@ -26,10 +26,12 @@ namespace Project3Vitour.Controllers
         public async Task<IActionResult> Index(UpdateSettingsDto loginDto)
         {
             var settings = await _settingsService.GetSettingsAsync();
-
+            //db deki gerçek verilerle  kullanıcının formda yazdığı bilgileri karşılaştırırım
             if (settings != null && settings.Username == loginDto.Username && settings.NewPassword == loginDto.NewPassword)
             {
-                // --- GÜVENLİK KİMLİĞİ OLUŞTURMA ---
+                 
+
+                //Claim->Bir kişinin kimliğine dair bilgilerdir
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, settings.Username),
@@ -37,15 +39,19 @@ namespace Project3Vitour.Controllers
                     new Claim(ClaimTypes.Role, "Admin")
                 };
 
+                //Oluşturduğum etiketleri bir araya getirip bir kimlik akrtı oluşturdum
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                 var authProperties = new AuthenticationProperties
                 {
-                    IsPersistent = true, // Beni hatırla seçeneği gibi çalışır
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60) // 60 dakika sonra oturum düşer
+                    // Beni hatırla seçeneği gibi çalışır
+                    IsPersistent = true,
+                    // 60 dakika sonra oturum düşer
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60) 
                 };
 
-                // Sisteme giriş yapıldığını mühürlüyoruz
+                /* Sistem oluşturduğum o k,mlik kartını tarayıcıya çerez olarak fırlatır.
+                Artık kullanıcı her yeni sayfa istediğinde tarayıcı bu çerezi yollar sisteme.*/
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), authProperties);
 

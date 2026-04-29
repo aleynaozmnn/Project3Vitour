@@ -14,11 +14,13 @@ namespace Project3Vitour.Controllers
 {
     public class AdminTourController : Controller
     {
+        //Çoklu servis enjeksiyonu.Controller burda 4 farklı servisi  birden yanına çağırıyor.
         private readonly ITourService _tourService;
         private readonly IImageService _imageService;
         private readonly IReservationService _reservationService;
         private readonly ICategoryService _categoryService;
 
+        //Constructor'ım.Controller bu servislerin methodlarını çağırır.Bir turu yönetmek için bu 4 bilgiye ihtiyaç vardır
         public AdminTourController(ITourService tourService, IImageService imageService,
             IReservationService reservationService,
             ICategoryService categoryService)
@@ -31,6 +33,7 @@ namespace Project3Vitour.Controllers
 
         public async Task<IActionResult> TourList()
         {
+            //Tur service'e gider,tüm turları getirip view,sayfama basarım.
             var values = await _tourService.GetAllTourAsync();
             return View(values);
         }
@@ -39,11 +42,15 @@ namespace Project3Vitour.Controllers
         public async Task<IActionResult> CreateTour()
         {
             var categories = await _categoryService.GetAllCategoryAsync();
+            /*Gidip serviceten aldığım ham kategori verisini <select>(açılır lsite combobox gibi)etiketinin anlayacağı
+            SelectListItem formatına çeviririm*/
+
+            //Viewbag:Controllerdan View(sayfama) küçük çanta içinde veri göndermemdir.
             ViewBag.CategoryList = (from x in categories
                                     select new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
                                     {
-                                        Text = x.CategoryName,
-                                        Value = x.CategoryId.ToString()
+                                        Text = x.CategoryName,//Kullanıcının göreceği isim
+                                        Value = x.CategoryId.ToString()//Arkada db ye kayıt edilecek Id'm.
                                     }).ToList();
             return View();
         }
@@ -57,25 +64,26 @@ namespace Project3Vitour.Controllers
         }
         public async Task<IActionResult> DeleteImage(string id)
         {
-            // 1. Silinecek resmi bul ki hangi tura ait olduğunu bilelim (Geri dönmek için)
-            // Eğer ImageService içinde GetById gibi bir metodun yoksa Referer kullanmaya devam edebiliriz 
-            // ama en garantisi budur:
+            //Gelen id ye sahip fotoyu siler.
             await _imageService.DeleteImageAsync(id);
 
             TempData["SuccessMessage"] = "Resim başarıyla kaldırıldı.";
 
-            // Request.Headers["Referer"] bazen güvenilmezdir. 
-            // Eğer resim silindikten sonra sayfa yenilenmiyorsa manuel yönlendirme en iyisidir.
+            //Kullanıcı hangi sayfadan sil butonuna bastıysa,işlem bitince otomatik o sayfaya yolla.
             return Redirect(Request.Headers["Referer"].ToString());
         }
         public async Task<IActionResult> DeleteTour(string id)
         {
+            //Url den gelen id bilgisini service göndericem.
             await _tourService.DeleteTourAsync(id);
+            //İşlem bitince kullanıcıyı listeye yollarım.
             return RedirectToAction("TourList");
         }
         public async Task<IActionResult> ChangeStatus(string id)
         {
+            //Turu silmek yerine aktif,pasif yapar
             await _tourService.ChangeStatusAsync(id);
+            // SweetAlert'in yakalaması için mesaj gönderiyoruz
             TempData["SuccessMessage"] = "Tur durumu güncellendi.";
             return RedirectToAction("Index");
         }
@@ -83,7 +91,7 @@ namespace Project3Vitour.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateTour(string id)
         {
-            // 1. Mevcut tur verisini çekiyoruz
+            // Güncellenecek turun tüm mevcut bilgilerini db den çekerim
             var value = await _tourService.GetTourByIdAsync(id);
 
             if (value == null)
@@ -91,7 +99,7 @@ namespace Project3Vitour.Controllers
                 return RedirectToAction("TourList");
             }
 
-            // 2. KATEGORİLERİ ÇEKİP VIEW'A GÖNDERİYORUZ (Dropdown için kritik adım)
+           
             var categories = await _categoryService.GetAllCategoryAsync();
             ViewBag.CategoryList = categories.Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
             {
@@ -99,7 +107,7 @@ namespace Project3Vitour.Controllers
                 Value = x.CategoryId.ToString()
             }).ToList();
 
-            // 3. Veriyi DTO'ya mapliyoruz
+            //Db den gelen entity verilerini ,formda kullanacağım UpdateTourDto nesnesine tek tek yerleştirdidm,Form açıldığında kutular dolu geelcek artık.
             var model = new UpdateTourDto
             {
                 TourId = value.TourId,
@@ -112,7 +120,7 @@ namespace Project3Vitour.Controllers
                 Badge = value.Badge,
                 IsStatus = value.IsStatus,
                 MapLocationImageUrl = value.MapLocationImageUrl,
-                CategoryId = value.CategoryId // Mevcut kategorinin seçili gelmesi için
+                CategoryId = value.CategoryId  
             };
 
             return View(model);
@@ -123,7 +131,7 @@ namespace Project3Vitour.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Eğer validation kullanıyorsan kategorileri tekrar doldurmalısın
+                 
                 var categories = await _categoryService.GetAllCategoryAsync();
                 ViewBag.CategoryList = categories.Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
                 {
@@ -134,11 +142,8 @@ namespace Project3Vitour.Controllers
             }
 
             await _tourService.UpdateTourAsync(updateTourDto);
-
-            // SweetAlert'in yakalaması için mesaj gönderiyoruz
             TempData["SuccessMessage"] = "Güncelleme işlemi başarıyla tamamlandı.";
-
-            return RedirectToAction("Index"); // TourList yerine Index'e yönlendirmek daha standarttır
+            return RedirectToAction("Index");  
         }
 
         public async Task<IActionResult> Index()
@@ -148,21 +153,21 @@ namespace Project3Vitour.Controllers
 
             foreach (var tour in tours)
             {
-                // Rezervasyon sayılarını doldur
+                //Tüm turları almıştık,bu tura kaç kişi rezervasyon yaptı diye bakıyoruz
                 tour.CurrentReservationCount = await _reservationService.GetTotalPersonCountByTourIdAsync(tour.TourId);
-
-                // Kategori ID'sinden Kategori Adını bulup Description veya yeni bir alana geçici atayabiliriz
                 var cat = categories.FirstOrDefault(x => x.CategoryId == tour.CategoryId);
-                // Not: Eğer ResultTourDto içinde CategoryName alanı açarsan çok daha şık olur.
+                
             }
 
             ViewBag.TotalTours = tours.Count;
             ViewBag.TotalTravelers = tours.Sum(x => x.CurrentReservationCount);
+
+            //Her turun kişi*fiyat ile akzancını hesaplarım
             ViewBag.TotalEarning = tours.Sum(x => (decimal)x.CurrentReservationCount * x.Price);
 
             double totalCapacity = tours.Sum(x => (double)x.Capacity);
             double totalReserved = tours.Sum(x => (double)x.CurrentReservationCount);
-
+            //Total kapasite/toplam rezervasyon oranını bulup turun doluluk oranını hesaplarım
             ViewBag.AvgFullness = totalCapacity > 0
                 ? ((totalReserved / totalCapacity) * 100).ToString("F1")
                 : "0.0";
@@ -173,12 +178,11 @@ namespace Project3Vitour.Controllers
         [HttpGet]
         public async Task<IActionResult> AddImage(string id)
         {
-            // Mevcut resimleri çek
+            //Id ye göre mevcut resimleri çek
             var images = await _imageService.GetImagesByTourIdAsync(id);
 
-            // Resimleri ViewBag ile sayfaya gönder
+            // Resimleri ViewBag(lüçük çantam) ile sayfaya gönder
             ViewBag.CurrentImages = images;
-
             var model = new CreateTourImageDto { TourId = id };
             return View(model);
         }
@@ -188,7 +192,7 @@ namespace Project3Vitour.Controllers
         {
             var currentImages = await _imageService.GetImagesByTourIdAsync(createTourImageDto.TourId);
 
-            // Buradaki sınırı 6 yapmayı unutma, kodunda 100 kalmış
+             
             if (currentImages != null && currentImages.Count >= 6)
             {
                 TempData["ErrorMessage"] = "Maksimum fotoğraf limitine (6) ulaşıldı.";
@@ -198,34 +202,39 @@ namespace Project3Vitour.Controllers
             await _imageService.CreateImageAsync(createTourImageDto);
             TempData["SuccessMessage"] = "Görsel başarıyla galeriye eklendi.";
 
-            // BURASI KRİTİK: Seni kullanıcı sayfasına değil, admin resim ekleme sayfasına geri atmalı
+            
             return RedirectToAction("AddImage", new { id = createTourImageDto.TourId });
         }
         public async Task<IActionResult> DeleteReservation(string id)
         {
             await _reservationService.DeleteReservationAsync(id);
+
+            
+            TempData["SuccessMessage"] = "Rezervasyon başarıyla silindi.";
+
             return RedirectToAction("ReservationList");
         }
 
         public async Task<IActionResult> ExportToExcel(string id)
         {
-            // 1. Rezervasyonu çek
+             
             var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation == null) return NotFound();
 
-            // 2. KRİTİK NOKTA: Tur detayını çekerek Tur Adını alıyoruz
+ 
             var tour = await _tourService.GetTourByIdAsync(reservation.TourId);
             string tourName = tour != null ? tour.Title : "Bilinmeyen Tur";
 
+            //Boş bir excel dosyası oluşturur
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("Rezervasyon Detay");
 
-                
+                //Excelin 1.satır 1.sütununa bu başlığı yazar
                 worksheet.Cell(1, 1).Value = "VİTOUR REZERVASYON RAPORU";
                 worksheet.Range("A1:B1").Merge().Style.Font.Bold = true;
 
-                worksheet.Cell(3, 1).Value = "SEÇİLEN TUR:"; // İşte patronun istediği o bilgi!
+                worksheet.Cell(3, 1).Value = "SEÇİLEN TUR:"; 
                 worksheet.Cell(3, 2).Value = tourName;
                 worksheet.Cell(3, 2).Style.Font.Bold = true;
                 worksheet.Cell(3, 2).Style.Font.FontColor = XLColor.DarkGreen;
@@ -242,12 +251,15 @@ namespace Project3Vitour.Controllers
                 worksheet.Cell(7, 1).Value = "REZERVASYON TARİHİ:";
                 worksheet.Cell(7, 2).Value = reservation.ReservationDate.ToString("dd.MM.yyyy");
 
+                //Çalışma sayfasındaki tüm sütunalı içindeki mentin uzunluğuna göre otomatik genişlett
                 worksheet.Columns().AdjustToContents();
 
+                //Hazırlanan bu sanal dosyayı bir veri akışına çevirir.
                 using (var stream = new MemoryStream())
                 {
                     workbook.SaveAs(stream);
                     var content = stream.ToArray();
+                    //Bu veriyi, tarayıcıya xlsx formatında bir dosya olarak gönderir.
                     return File(content,
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         $"Rapor_{reservation.NameSurname.Replace(" ", "_")}.xlsx");
@@ -256,13 +268,8 @@ namespace Project3Vitour.Controllers
         }
         public async Task<IActionResult> ReservationList()
         {
-            // 1. Tüm rezervasyonları çekiyoruz
             var reservations = await _reservationService.GetAllReservationsAsync();
-
-            // 2. Tüm turları çekiyoruz
             var tours = await _tourService.GetAllTourAsync();
-
-            // 3. Rezervasyonların içine Tur Adlarını yerleştiriyoruz
             foreach (var res in reservations)
             {
                 var tour = tours.FirstOrDefault(x => x.TourId == res.TourId);
@@ -270,14 +277,18 @@ namespace Project3Vitour.Controllers
                 res.Description = tour != null ? tour.Title : "Tur Bulunamadı";
             }
 
-            // --- KRİTİK EKSİK BURASIYDI ---
+            
             return View(reservations);
         }
 
         public async Task<IActionResult> ReservationDetail(string id)
         {
-            var value = await _reservationService.GetReservationByIdAsync(id);
-            return View(value);
+            
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
+            if (reservation == null) return NotFound();
+            var tour = await _tourService.GetTourByIdAsync(reservation.TourId);
+            reservation.Description = tour != null ? tour.Title : "Tur Bilgisi Bulunamadı";
+            return View(reservation);
         }
     }
 }

@@ -56,11 +56,14 @@
 
         @* SAĞ TARAF: CANLI KART ÖNİZLEMESİ *@
         <div class="col-lg-5">
-            <div class="sticky-top" style="top: 20px; z-index: 1;">
-                <h6 class="text-muted fw-bold mb-3 text-uppercase small"><i class="bi bi-eye me-2"></i>Canlı Önizleme</h6>
+            @* Kart ve Alert'i aynı genişlikte tutacak bir wrapper (kapsayıcı) ekledik *@
+            <div class="sticky-top mx-auto" style="top: 20px; z-index: 1; max-width: 400px;">
+                <h6 class="text-muted fw-bold mb-3 text-uppercase small text-center text-lg-start">
+                    <i class="bi bi-eye me-2"></i>Canlı Önizleme
+                </h6>
 
                 @* Vitour Kart Tasarımı *@
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 400px;">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-3">
                     <div class="position-relative">
                         <img id="previewImg" src="https://via.placeholder.com/400x250?text=Görsel+Bekleniyor" class="card-img-top" style="height: 250px; object-fit: cover;">
                         <span class="position-absolute top-0 start-0 m-3 badge rounded-pill bg-primary px-3 py-2 shadow" id="previewPrice">$0</span>
@@ -80,8 +83,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="alert alert-info mt-3 rounded-3 small border-0 shadow-sm">
-                    <i class="bi bi-info-circle me-2"></i> Bilgileri girdikçe kart otomatik olarak güncellenir.
+
+                @* Bilgi Şeridi - Artık Kartla Aynı Genişlikte *@
+                <div class="alert alert-info rounded-3 small border-0 shadow-sm m-0">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle flex-shrink-0 me-2"></i>
+                        <div>Bilgileri girdikçe kart otomatik olarak güncellenir.</div>
+                    </div>
                 </div>
             </div>
         </div>

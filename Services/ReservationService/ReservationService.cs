@@ -7,6 +7,7 @@ namespace Project3Vitour.Services.ReservationService
 {
     public class ReservationService:IReservationService
     {
+        //Rezervasyon tablosuyla çalışıcam dedim mongodb ye
         private readonly IMongoCollection<Reservation> _reservationCollection;
         public ReservationService(IDatabaseSettings _databaseSettings)
         {
@@ -31,7 +32,7 @@ namespace Project3Vitour.Services.ReservationService
         }
         public async Task<int> GetTotalPersonCountByTourIdAsync(string tourId)
         {
-            // O tura ait tüm rezervasyonları bul ve kişi sayılarını topla
+            
             var reservations = await _reservationCollection.Find(x => x.TourId == tourId).ToListAsync();
             return reservations.Sum(x => x.PersonCount);
         }
@@ -39,7 +40,7 @@ namespace Project3Vitour.Services.ReservationService
         {
             var values = await _reservationCollection.Find(x => true).ToListAsync();
 
-            // Manuel eşleme (Eğer AutoMapper ile ilgili bir hata alırsan en güvenli yol budur)
+           
             return values.Select(x => new ResultReservationDto
             {
                 ReservationId = x.ReservationId,
@@ -52,22 +53,16 @@ namespace Project3Vitour.Services.ReservationService
                 TourId = x.TourId
             }).ToList();
         }
-        // Rezervasyon Silme
-        // Rezervasyon Silme - DOĞRU HALİ
+       
         public async Task DeleteReservationAsync(string id)
         {
-            // _database yerine yukarıda tanımladığın _reservationCollection'ı kullanmalısın
             await _reservationCollection.DeleteOneAsync(x => x.ReservationId == id);
         }
-
-        // ID'ye Göre Getirme - DOĞRU HALİ
         public async Task<ResultReservationDto> GetReservationByIdAsync(string id)
         {
-            // Burada da _reservationCollection kullanıyoruz
+           
             var value = await _reservationCollection.Find(x => x.ReservationId == id).FirstOrDefaultAsync();
-
             if (value == null) return null;
-
             return new ResultReservationDto
             {
                 ReservationId = value.ReservationId,

@@ -5,7 +5,7 @@ using Project3Vitour.Services.TourPlanServices;
 namespace Project3Vitour.Controllers
 {
     public class AdminTourPlanController : Controller
-    {
+    {  //Tur planalrını veritabanına kaydedecek,silecek ve güncelleyecek olan servis katmanını sınıfa tanıttım
         private readonly ITourPlanService _tourPlanService;
         public AdminTourPlanController(ITourPlanService tourPlanService)
         {
@@ -14,12 +14,14 @@ namespace Project3Vitour.Controllers
 
         public async Task<IActionResult> Index(string id)
         {
+            //Girilen id me ait tur planalrını db den çektim
             var values = await _tourPlanService.GetTourPlanByTourIdAsync(id);
             ViewBag.tourId = id;
             return View(values);  
         }
 
         [HttpPost]
+        //Kullanıcı formu doldurup kaydet butonuna bastığında
         public async Task<IActionResult> AddPlan(CreateTourPlanDto dto)
         {
             await _tourPlanService.CreateTourPlanAsync(dto);
@@ -27,14 +29,10 @@ namespace Project3Vitour.Controllers
         }
         public async Task<IActionResult> DeletePlan(string id)
         {
-            
+            //O planın hangi tura ait olduğunu öğren
             var plan = await _tourPlanService.GetByIdTourPlanAsync(id);
             var tourId = plan.TourId; 
-
-            
             await _tourPlanService.DeleteTourPlanAsync(id);
-
-             
             return RedirectToAction("Index", new { id = tourId });
         }
         [HttpGet]

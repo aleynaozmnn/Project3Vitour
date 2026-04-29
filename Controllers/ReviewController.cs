@@ -15,6 +15,7 @@ namespace Project3Vitour.Controllers
 
         public IActionResult CreateReview(string id)
         {
+            //Kullanıcının yorum yaptıgı turun id sini alıyorum
             var model = new CreateReviewDto { TourId = id };
             return View(model);
         }
@@ -22,6 +23,7 @@ namespace Project3Vitour.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateReview(CreateReviewDto createReviewDto)
         {
+            //Kullanıcı yorumu yolladığı an pasif durumuna aldım.Admin onaylayabilsin.
             createReviewDto.Status = false;
             await _reviewService.CreateReviewAsync(createReviewDto);
             return RedirectToAction("Index", "Default");
@@ -33,7 +35,7 @@ namespace Project3Vitour.Controllers
             return View(values);
         }
 
-        // --- BURASI ESKİ HALİNE DÖNDÜ ---
+        
         public async Task<IActionResult> ReviewList()
         {
             var values = await _reviewService.GetAllReviews();
@@ -53,6 +55,7 @@ namespace Project3Vitour.Controllers
                     Score = review.Score,
                     ReviewDate = review.ReviewDate,
                     TourId = review.TourId,
+                    //Mevcut yorumun tüm bilgilerini al sadece durumu aktif yap
                     Status = true
                 };
                 await _reviewService.UpdateReviewAsync(updateDto);

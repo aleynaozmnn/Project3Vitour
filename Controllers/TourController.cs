@@ -36,6 +36,7 @@ namespace Project3Vitour.Controllers
      
         public async Task<IActionResult> TourList(int page = 1)
         {
+            // Her sayfada 6 tur göster
             int pageSize = 6;
             var values = await _tourService.GetToursWithPagingAsync(page, pageSize);
 
@@ -66,18 +67,12 @@ namespace Project3Vitour.Controllers
                 return RedirectToAction("TourList");
             }
 
-            // 1. REVİZE: DTO içindeki alanı dolduruyoruz (ViewBag yerine doğrudan model kullanımı)
+           
             value.CurrentReservationCount = await _reservationService.GetTotalPersonCountByTourIdAsync(id);
-
-            // 2. DİĞER VERİLER: Bunlar farklı DTO listeleri olduğu için ViewBag'de kalabilir 
-            // veya daha ileri seviyede bir 'ViewModel' içinde toplanabilir. Şimdilik bu yeterli:
             ViewBag.Plans = await _tourPlanService.GetTourPlanByTourIdAsync(id);
             ViewBag.Reviews = await _reviewService.GetAllReviewsByTourIdAsync(id);
             ViewBag.TourGallery = await _imageService.GetImagesByTourIdAsync(id);
-
-            // Kapasiteyi zaten DTO içindeki value.Capacity'den okuyacağız, 
-            // ekstradan ViewBag.Capacity'ye gerek kalmadı.
-
+    
             return View(value);
         }
         [HttpPost]
@@ -86,10 +81,7 @@ namespace Project3Vitour.Controllers
              
             createReviewDto.ReviewDate = DateTime.Now;
             createReviewDto.Status = true;
-
             await _reviewService.CreateReviewAsync(createReviewDto);
-
-             
             return RedirectToAction("TourSingle", new { id = createReviewDto.TourId });
         }
         [HttpGet]
@@ -105,10 +97,10 @@ namespace Project3Vitour.Controllers
             var currentBookings = await _reservationService.GetTotalPersonCountByTourIdAsync(id);
 
             ViewBag.TourId = id;
-            ViewBag.TourName = tour.Title;         // Artık "Kapadokya" statik değil
-            ViewBag.Price = tour.Price;             // Artık fiyat turdan geliyor
-            ViewBag.Capacity = tour.Capacity;       // Toplam kontenjan
-            ViewBag.CurrentBookings = currentBookings; // Dolu olan yer
+            ViewBag.TourName = tour.Title;         
+            ViewBag.Price = tour.Price;              
+            ViewBag.Capacity = tour.Capacity;       
+            ViewBag.CurrentBookings = currentBookings; 
 
             return View();
         }

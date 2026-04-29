@@ -156,11 +156,12 @@
                             <a href="/Category/UpdateCategory/@item.CategoryId" class="btn-action me-1">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a href="/Category/DeleteCategory/@item.CategoryId"
-                               class="btn-action text-danger shadow-sm"
-                               onclick="return confirm('@item.CategoryName kategorisini silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')">
+                            @* Geleneksel onclick silindi, confirmDelete fonksiyonu eklendi *@
+                            <button type="button"
+                                    class="btn-action text-danger shadow-sm"
+                                    onclick="confirmDelete('@item.CategoryId', '@item.CategoryName')">
                                 <i class="bi bi-trash3"></i>
-                            </a>
+                            </button>
                         </td>
                     </tr>
                 }
@@ -168,3 +169,44 @@
         </table>
     </div>
 </div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(id, name) {
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: name + " kategorisi kalıcı olarak silinecektir!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5', // Dashboard indigosu
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Evet, Sil!',
+                cancelButtonText: 'İptal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Controller'daki silme aksiyonuna yönlendir
+                    window.location.href = "/Category/DeleteCategory/" + id;
+                }
+            })
+        }
+
+        // Başarı mesajı kontrolü
+        document.addEventListener("DOMContentLoaded", function() {
+            @if (TempData["CategorySuccess"] != null)
+            {
+                    <text>
+                    Swal.fire({
+                        title: 'İşlem Başarılı!',
+                        text: '@TempData["CategorySuccess"]',
+                        icon: 'success',
+                        timer: 2500,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                    </text>
+            }
+        });
+    </script>
+}
