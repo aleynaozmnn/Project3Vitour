@@ -27,5 +27,10 @@ namespace Project3Vitour.Dtos.SettingsDtos
         /*IFormFile->Kullanıcının bilgisayardan seçtiği dosyayı,
          sunucuya taşımak için kullandığım geçici bir kutu,tepsi*/
         public IFormFile ImageFile { get; set; }
+
+        public string ConfirmCode { get; set; }
+        public bool IsConfirmed { get; set; }
+
+
     }
 }

@@ -35,6 +35,8 @@ namespace Project3Vitour.Controllers
         {
             //Tur service'e gider,tüm turları getirip view,sayfama basarım.
             var values = await _tourService.GetAllTourAsync();
+            var categories = await _categoryService.GetAllCategoryAsync();
+            ViewBag.CategoryList = categories.Select(x => x.CategoryName).Distinct().ToList();
             return View(values);
         }
 
@@ -85,7 +87,7 @@ namespace Project3Vitour.Controllers
             await _tourService.ChangeStatusAsync(id);
             // SweetAlert'in yakalaması için mesaj gönderiyoruz
             TempData["SuccessMessage"] = "Tur durumu güncellendi.";
-            return RedirectToAction("Index");
+            return RedirectToAction("TourList");
         }
 
         [HttpGet]

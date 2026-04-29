@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.23" />
     <PackageReference Include="MongoDB.Bson" Version="2.30.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.30.0" />

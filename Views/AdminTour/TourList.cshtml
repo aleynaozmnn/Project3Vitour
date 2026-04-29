@@ -129,7 +129,6 @@
     </style>
 }
 
-@* 1. BANNER *@
 <div class="boss-banner" style="background: white; border-radius: 24px; padding: 24px 32px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
     <div class="d-flex align-items-center">
         <div class="banner-icon-box" style="width: 56px; height: 56px; background: #f1f0ff; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #4f46e5; margin-right: 20px;">
@@ -159,9 +158,13 @@
         <label class="filter-label">Kategori (Rozet)</label>
         <select id="categoryFilter" class="form-select shadow-sm" style="border-radius: 12px; height: 48px;">
             <option value="">Tüm Kategoriler</option>
-            <option value="Kültür Turu">Kültür Turu</option>
-            <option value="Yurt Dışı">Yurt Dışı</option>
-            <option value="Yurt İçi">Yurt İçi</option>
+            @if (ViewBag.CategoryList != null)
+            {
+                foreach (var categoryName in (List<string>)ViewBag.CategoryList)
+                {
+                    <option value="@categoryName">@categoryName</option>
+                }
+            }
         </select>
     </div>
 
@@ -259,88 +262,61 @@
 
     <script>
         $(document).ready(function () {
-            // DATATABLES BAŞLATMA
             var table = $('#tourTable').DataTable({
-                "paging": true,           // Sayfalama aktif
-                "lengthChange": true,     // Sayfada kaç kayıt gösterilsin seçeneği
-                "searching": true,        // DataTables'ın kendi araması
-                "ordering": true,         // Sıralama aktif
-                "info": true,             // "10 kayıttan 1-5 arası gösteriliyor" bilgisi
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
                 "autoWidth": false,
                 "responsive": true,
-                "pageLength": 10,         // Varsayılan olarak 10 kayıt göster
+                "pageLength": 10,
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" // Türkçe dil desteği
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
                 },
-                        // Mevcut "dom" satırını bununla değiştir:
-        "dom": '<"row px-4 py-3 align-items-center"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row px-4 py-3 align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                "dom": '<"row px-4 py-3 align-items-center"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row px-4 py-3 align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             });
 
-            // SENİN ÖZEL FİLTRELERİN (DataTables ile uyumlu hale getirildi)
             $("#nameFilter").on("keyup", function () {
                 table.column(0).search(this.value).draw();
             });
 
-            $("#categoryFilter").on("change", function () {
-                table.column(1).search(this.value).draw();
-            });
+                    $("#categoryFilter").on("change", function () {
+            var val = $(this).val().trim(); // Seçilen değerin boşluklarını temizle
 
-            // Fiyat Filtresi (Özel Aralık Araması)
-            $.fn.dataTable.ext.search.push(
-                function (settings, data, dataIndex) {
-                    var max = parseFloat($('#priceFilter').val());
-                    var price = parseFloat(data[2].replace(/[^\d]/g, "")) || 0;
-
-                    if (isNaN(max) || price <= max) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
-
+            if (val === "") {
+                // Eğer "Tüm Kategoriler" seçildiyse filtreyi tamamen temizle
+                table.column(1).search('').draw();
+            } else {
+                // 'true, false' ayarları sayesinde tam kelime değil,
+                // "içinde bu geçiyor mu?" diye bakıyoruz.
+                // Bu sayede "Kültür Turu" yazsa bile "Kültür" seçince bulur.
+                table.column(1)
+                     .search(val, false, false)
+                     .draw();
+            }
+        });
             $('#priceFilter').on('keyup change', function () {
                 table.draw();
             });
 
-            // Sıfırla Butonu
             $("#resetFilters").click(function () {
                 $("#nameFilter, #priceFilter").val("");
                 $("#categoryFilter").val("");
                 table.search('').columns().search('').draw();
             });
 
-            // Başarı Mesajı (TempData)
             @if (TempData["SuccessMessage"] != null)
             {
-                    <text>
-                    Swal.fire({
-                        title: 'Başarılı!',
-                        text: '@TempData["SuccessMessage"]',
-                        icon: 'success',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                    </text>
+                        <text>
+                        Swal.fire({
+                            title: 'Başarılı!',
+                            text: '@TempData["SuccessMessage"]',
+                            icon: 'success',
+                            confirmButtonColor: '#4f46e5'
+                        });
+                        </text>
             }
         });
     </script>
-
-    <style>
-        /* DataTables buton ve inputlarını senin tasarımına uyduralım */
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background: #4f46e5 !important;
-            color: white !important;
-            border-radius: 8px !important;
-            border: none !important;
-        }
-
-        .dataTables_filter {
-            display: none;
-        }
-        /* Kendi arama kutumuzu kullandığımız için bunu gizledik */
-        .dataTables_length select {
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            padding: 4px 8px;
-        }
-    </style>
 }

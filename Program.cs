@@ -1,4 +1,6 @@
+using Project3Vitour.Services.MailServices;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Localization; // Yeni: Localization için
 using Microsoft.Extensions.Options;
 using Project3Vitour.Services.CategoryServices;
 using Project3Vitour.Services.DestinationService;
@@ -11,9 +13,9 @@ using Project3Vitour.Services.TourPlanService;
 using Project3Vitour.Services.TourPlanServices;
 using Project3Vitour.Services.TourServices;
 using Project3Vitour.Settings;
-using System.Reflection;
 using System.Globalization; // Yeni: Dil ayarlarý için
-using Microsoft.AspNetCore.Localization; // Yeni: Localization için
+using System.Reflection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +51,7 @@ builder.Services.AddScoped<ITourPlanService, TourPlanService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IDestinationService, DestinationService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IDatabaseSettings>(sp =>
 {
     return sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
@@ -57,7 +60,7 @@ builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 
-// --- 2. DÝL DESTEÐÝ YAPILANDIRMASI (YENÝ - CASE GEREKSÝNÝMÝ) ---
+ 
 var supportedCultures = new[] {
     new CultureInfo("tr-TR"),
     new CultureInfo("en-US")
