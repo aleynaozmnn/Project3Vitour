@@ -36,6 +36,15 @@ namespace Project3Vitour.Controllers
             //Tur service'e gider,tüm turları getirip view,sayfama basarım.
             var values = await _tourService.GetAllTourAsync();
             var categories = await _categoryService.GetAllCategoryAsync();
+            foreach (var tour in values)
+            {
+                
+                var cat = categories.FirstOrDefault(x => x.CategoryId == tour.CategoryId);
+                if (cat != null)
+                {
+                    tour.CategoryName = cat.CategoryName;
+                }
+            }
             ViewBag.CategoryList = categories.Select(x => x.CategoryName).Distinct().ToList();
             return View(values);
         }
@@ -158,7 +167,10 @@ namespace Project3Vitour.Controllers
                 //Tüm turları almıştık,bu tura kaç kişi rezervasyon yaptı diye bakıyoruz
                 tour.CurrentReservationCount = await _reservationService.GetTotalPersonCountByTourIdAsync(tour.TourId);
                 var cat = categories.FirstOrDefault(x => x.CategoryId == tour.CategoryId);
-                
+                if (cat != null)
+                {
+                    tour.CategoryName = cat.CategoryName;  
+                }
             }
 
             ViewBag.TotalTours = tours.Count;
@@ -291,6 +303,16 @@ namespace Project3Vitour.Controllers
             var tour = await _tourService.GetTourByIdAsync(reservation.TourId);
             reservation.Description = tour != null ? tour.Title : "Tur Bilgisi Bulunamadı";
             return View(reservation);
+        }
+        
+        private async Task FillCategoryViewBag()
+        {
+            var categories = await _categoryService.GetAllCategoryAsync();
+            ViewBag.CategoryList = categories.Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+            {
+                Text = x.CategoryName,
+                Value = x.CategoryId.ToString()
+            }).ToList();
         }
     }
 }

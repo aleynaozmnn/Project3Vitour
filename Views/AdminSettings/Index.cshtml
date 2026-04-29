@@ -1,5 +1,6 @@
 ﻿@model Project3Vitour.Dtos.SettingsDtos.UpdateSettingsDto
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<SharedResource> Localizer
 @{
     ViewData["Title"] = "Ayarlar";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -122,14 +123,14 @@
                             <i class="bi bi-person-badge-fill fs-4"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold m-0">Profil Ayarları</h4>
-                            <p class="text-muted small m-0">Hesap ve site bilgilerini buradan güncelleyebilirsiniz.</p>
+                            <h4 class="fw-bold m-0">@Localizer["ProfileSettings"]</h4>
+                            <p class="text-muted small m-0">@Localizer["ProfileSettingsDesc"]</p>
                         </div>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-md-12 mb-3">
-                            <label class="form-label">Profil Fotoğrafı</label>
+                            <label class="form-label">@Localizer["ProfilePicture"]</label>
                             @* REVİZE: Resim varsa göster, yoksa ikon göster *@
                             <div class="profile-upload" onclick="document.getElementById('fileInput').click();">
                                 @if (!string.IsNullOrEmpty(Model?.ImageUrl))
@@ -144,42 +145,41 @@
                                 @* REVİZE: name="ImageFile" Controller'daki IFormFile ile eşleşmeli *@
                                 <input type="file" id="fileInput" name="ImageFile" class="d-none" accept="image/*" onchange="previewImage(this)">
                             </div>
-                            <small class="text-muted">Değiştirmek için fotoğrafın üzerine tıklayın.</small>
+                            <small class="text-muted">@Localizer["ClickToChange"]</small>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Ad Soyad</label>
-                            <input type="text" name="FullName" class="form-control" value="@Model?.FullName" placeholder="Adınız Soyadınız">
+                            <label class="form-label">@Localizer["FullName"]</label>
+                            <input type="text" name="FullName" class="form-control" value="@Model?.FullName" placeholder="@Localizer["FullName"]">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Kullanıcı Adı</label>
-                            <input type="text" name="Username" class="form-control" value="@Model?.Username" placeholder="Kullanıcı Adı">
+                            <label class="form-label">@Localizer["Username"]</label>
+                            <input type="text" name="Username" class="form-control" value="@Model?.Username" placeholder="@Localizer["Username"]">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">E-Posta Adresi</label>
-                            <input type="email" name="Email" class="form-control" value="@Model?.Email" placeholder="mail@vitour.com">
+                            <label class="form-label">@Localizer["Email"]</label> <input type="email" name="Email" class="form-control" value="@Model?.Email" placeholder="mail@vitour.com">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Telefon</label>
+                            <label class="form-label">@Localizer["Phone"]</label>
                             <input type="text" name="Phone" class="form-control" value="@Model?.Phone" placeholder="+90 5XX XXX XX XX">
                         </div>
 
                         <div class="col-md-12">
-                            <label class="form-label">Site Başlığı (SEO)</label>
+                            <label class="form-label">@Localizer["SiteTitle"]</label>
                             <input type="text" name="SiteTitle" class="form-control" value="@Model?.SiteTitle" placeholder="Vitour - Turizm ve Seyahat">
                         </div>
 
                         <div class="col-md-12">
-                            <label class="form-label">Footer (Alt Bilgi) Metni</label>
+                            <label class="form-label">@Localizer["FooterText"]</label>
                             <textarea name="FooterText" class="form-control" rows="3" placeholder="© 2024 Vitour Tüm Hakları Saklıdır.">@Model?.FooterText</textarea>
                         </div>
 
                         <div class="col-12 mt-4 text-end">
                             <button type="submit" class="btn-save">
-                                <i class="bi bi-check2-circle me-2"></i>Değişiklikleri Kaydet
+                                <i class="bi bi-check2-circle me-2"></i>@Localizer["Save"]
                             </button>
                         </div>
                     </div>
@@ -190,15 +190,19 @@
                 <div class="row g-4">
                     <div class="col-12">
                         <div class="settings-card shadow-sm">
-                            <h6 class="fw-bold mb-3">Sistem Dili</h6>
-                            <div class="lang-card active mb-2">
+                            <h6 class="fw-bold mb-3">@Localizer["SystemLanguage"]</h6>
+
+                            <div class="lang-card @(System.Globalization.CultureInfo.CurrentCulture.Name == "tr-TR" ? "active" : "") mb-2"
+                                 onclick="location.href='/Language/Change?culture=tr-TR'">
                                 <span class="fs-4">🇹🇷</span>
                                 <div>
                                     <div class="fw-bold small">Türkçe</div>
                                     <div class="text-muted" style="font-size: 11px;">Varsayılan sistem dili</div>
                                 </div>
                             </div>
-                            <div class="lang-card">
+
+                            <div class="lang-card @(System.Globalization.CultureInfo.CurrentCulture.Name == "en-US" ? "active" : "")"
+                                 onclick="location.href='/Language/Change?culture=en-US'">
                                 <span class="fs-4">🇺🇸</span>
                                 <div>
                                     <div class="fw-bold small">English</div>
@@ -210,17 +214,17 @@
 
                     <div class="col-12">
                         <div class="settings-card shadow-sm">
-                            <h6 class="fw-bold mb-3">Güvenlik</h6>
+                            <h6 class="fw-bold mb-3">@Localizer["Security"]</h6>
                             <div class="mb-3">
-                                <label class="form-label">Mevcut Şifre</label>
+                                <label class="form-label">@Localizer["CurrentPassword"]</label>
                                 <input type="password" name="CurrentPassword" class="form-control">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Yeni Şifre</label>
+                                <label class="form-label">@Localizer["NewPassword"]</label>
                                 <input type="password" name="NewPassword" class="form-control">
                             </div>
                             <div class="alert alert-info py-2 small" style="border-radius: 10px;">
-                                <i class="bi bi-info-circle me-2"></i>Şifreniz en az 8 karakter olmalıdır.
+                                <i class="bi bi-info-circle me-2"></i>@Localizer["PasswordHint"]
                             </div>
                         </div>
                     </div>
@@ -253,7 +257,7 @@
                 <text>
                     Swal.fire({
                         icon: 'success',
-                        title: 'Harika!',
+                            @Localizer["SuccessTitle"]
                         text: '@Html.Raw(TempData["SuccessMessage"])',
                         confirmButtonColor: '#4f46e5',
                         timer: 3000,

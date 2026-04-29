@@ -10,6 +10,8 @@ using Project3Vitour.Services.TourPlanService;
 using Project3Vitour.Services.TourPlanServices;
 using Project3Vitour.Services.TourServices;
 using System.Threading.Tasks;
+using Project3Vitour.Services.MailServices;
+
 
 namespace Project3Vitour.Controllers
 {
@@ -21,9 +23,11 @@ namespace Project3Vitour.Controllers
         private readonly IReservationService _reservationService;
         private readonly IImageService _imageService;
         private readonly ICategoryService _categoryService;
+        private readonly IMailService _mailService;
         public TourController(ITourService tourService, ITourPlanService tourPlanService, IReviewService reviewService,IReservationService reservationService,
              IImageService imageService
-             , ICategoryService categoryService)
+             , ICategoryService categoryService,
+             IMailService mailService)
         {
             _tourService = tourService;
             _tourPlanService = tourPlanService;
@@ -31,6 +35,7 @@ namespace Project3Vitour.Controllers
             _reservationService = reservationService;
             _imageService = imageService;
             _categoryService = categoryService;
+            _mailService = mailService;
         }
 
      
@@ -44,9 +49,17 @@ namespace Project3Vitour.Controllers
             foreach (var item in values)
             {
                 item.CurrentReservationCount = await _reservationService.GetTotalPersonCountByTourIdAsync(item.TourId);
+                if(!string.IsNullOrEmpty(item.CategoryId))
+                {
+                    //o id ye sahip kategorinin adını getirmek için
+                    var category=await _categoryService.GetCategoryByIdAsync(item.CategoryId);
+                    //Kategori bulunduysa item.categoryName içine koy
+                    item.CategoryName = category != null ? category.CategoryName : "Kategorisiz";
+                }
             }
 
             var totalTourCount = await _tourService.GetTotalTourCountAsync();
+
             var model = new TourPaginationViewModel
             {
                 Tours = values,
@@ -123,7 +136,30 @@ namespace Project3Vitour.Controllers
 
             // Her şey tamamsa kaydet
             await _reservationService.CreateReservationAsync(createReservationDto);
-            return Json(new { success = true, message = "Rezervasyonunuz başarıyla alındı!" });
+           
+            try
+            {
+                string subject = "Rezervasyon Onayı-Vitour Seyehat";
+                // Satır başlarındaki boşlukları sıfırlayarak yazıyoruz:
+                string participantNote = "";
+                if (createReservationDto.PersonCount > 1 && !string.IsNullOrEmpty(createReservationDto.Description))
+                {
+                    participantNote = $"\nEk Katılımcı Bilgileri: {createReservationDto.Description}";
+                }
+
+                string body = $"Merhaba {createReservationDto.NameSurname},\n\n" +
+                              $"{tour.Title} turu için rezervasyonunuz başarıyla alınmıştır.\n" +
+                              $"Kişi Sayısı: {createReservationDto.PersonCount}" +
+                              $"{participantNote}\n\n" + // Not varsa buraya eklenecek
+                              "Keyifli yolculuklar dileriz!";
+                _mailService.SendMail(createReservationDto.Email, subject, body);
+
+            }
+            catch
+            {
+
+            }
+            return Json(new { success = true, message = "Rezervasyonunuz başarıyla alındı ve onay maili gönderildi!" });
         }
         
         

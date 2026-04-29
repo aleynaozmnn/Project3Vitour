@@ -242,6 +242,14 @@
                                 <label class="block text-[10px] font-bold mb-2 uppercase text-gray-400 tracking-wider">Kişi Sayısı</label>
                                 <input type="number" id="PersonCount" name="PersonCount" min="1" max="@remainingCapacity" value="1" required class="field-input" />
                             </div>
+
+
+                            <div id="extraParticipantsArea" style="display:none;" class="mt-4">
+                                <label class="block text-[10px] font-bold mb-2 uppercase text-gray-400 tracking-wider">Ek Katılımcı Bilgileri</label>
+                                <textarea id="descriptionInput" name="Description" class="field-input h-24 resize-none"
+                                      placeholder="Diğer misafirlerin ad-soyad bilgilerini buraya yazabilirsiniz..."></textarea>
+                                <p class="text-[10px] text-emerald-600 mt-1 italic">Birden fazla kişi seçtiğiniz için bu alan aktifleşti.</p>
+                            </div>
                         </div>
 
                         <div class="flex justify-between items-center rounded-2xl px-6 py-5 mt-8" style="background:#fcfaf7; border:1px solid #f0ede8;">
@@ -269,29 +277,37 @@
 
     <script>
                  $(document).ready(function () {
-            // Revize: C# tarafında hazırladığımız güvenli formatı kullanıyoruz
+            
             const unitPrice = parseFloat("@jsPrice");
             const remaining = parseInt("@remainingCapacity");
 
-            $('#PersonCount').on('input change', function () {
-                let count = parseInt($(this).val());
+                    $('#PersonCount').on('input change', function () {
+            let count = parseInt($(this).val());
 
-                // Revize: Eğer kullanıcı kalan kontenjandan fazla sayı yazarsa otomatik düzelt
-                if (count > remaining) {
-                    $(this).val(remaining);
-                    count = remaining;
-                }
-                if (isNaN(count) || count < 1) count = 1;
+           
+            if (count > 1) {
+                $('#extraParticipantsArea').slideDown(); // 1'den fazlaysa alanı göster
+            } else {
+                $('#extraParticipantsArea').slideUp();   // 1 ise alanı gizle
+                $('#descriptionInput').val("");          // Gizlendiğinde içini temizle
+            }
+             
 
-                const total = count * unitPrice;
-                $('#displayCount').text(count);
-                $('#totalPrice').text('₺' + total.toLocaleString('tr-TR', { minimumFractionDigits: 2 }));
-            });
+            if (count > remaining) {
+                $(this).val(remaining);
+                count = remaining;
+            }
+            if (isNaN(count) || count < 1) count = 1;
+
+            const total = count * unitPrice;
+            $('#displayCount').text(count);
+            $('#totalPrice').text('₺' + total.toLocaleString('tr-TR', { minimumFractionDigits: 2 }));
+        });
 
             $('#reservationForm').on('submit', function (e) {
                 e.preventDefault();
 
-                // AJAX isteğine form verilerini serialize ederek gönderiyoruz
+                
                 $.ajax({
                     type: 'POST',
                     url: '/Tour/MakeReservation', // URL'i doğrudan yazdık

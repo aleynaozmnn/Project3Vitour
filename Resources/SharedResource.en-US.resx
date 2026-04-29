@@ -213,4 +213,55 @@
   <data name="SystemManagement" xml:space="preserve">
     <value>System Management</value>
   </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="ProfileSettingsDesc" xml:space="preserve">
+    <value>You can update your account and site information here.</value>
+  </data>
+  <data name="ProfilePicture" xml:space="preserve">
+    <value>Profile Picture</value>
+  </data>
+  <data name="ClickToChange" xml:space="preserve">
+    <value>Click on the photo to change.</value>
+  </data>
+  <data name="SiteTitle" xml:space="preserve">
+    <value>Site Title (SEO)</value>
+  </data>
+  <data name="FooterText" xml:space="preserve">
+    <value>Footer Text</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>Current Password</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="PasswordHint" xml:space="preserve">
+    <value>Your password must be at least 8 characters.</value>
+  </data>
+  <data name="SystemLanguage" xml:space="preserve">
+    <value>System Language</value>
+  </data>
+  <data name="DefaultLanguage" xml:space="preserve">
+    <value>Default system language</value>
+  </data>
+  <data name="UseEnglish" xml:space="preserve">
+    <value>Use system in English</value>
+  </data>
 </root>

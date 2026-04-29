@@ -208,6 +208,7 @@
         <thead class="bg-light text-muted small text-uppercase">
             <tr>
                 <th class="ps-4 py-3">Tur Bilgisi</th>
+                <th>Kategori</th>
                 <th>Rozet</th>
                 <th>Fiyat</th>
                 <th>Durum</th>
@@ -227,25 +228,34 @@
                             </div>
                         </div>
                     </td>
-                    <td><span class="badge bg-light text-primary border">@item.Badge</span></td>
-                    <td class="fw-bold text-indigo">₺@item.Price.ToString("N0")</td>
+
+                    <td><span class="text-muted small">@item.CategoryName</span></td>
+
                     <td>
-                        <a href="/AdminTour/ChangeStatus/@item.TourId">
-                            @if (item.IsStatus)
-                            {
-                                <span class="ap-status status-live">● Yayında</span>
-                            }
-                            else
-                            {
-                                <span class="ap-status status-draft">● Pasif</span>
-                            }
+                        @if (!string.IsNullOrEmpty(item.Badge))
+                        {
+                            <span class="badge bg-light text-primary border">@item.Badge.Trim()</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">---</span>
+                        }
+                    </td>
+
+                    <td class="fw-bold text-indigo" data-order="@item.Price">₺@item.Price.ToString("N0")</td>
+
+                    <td>
+                        <a href="/AdminTour/ChangeStatus/@item.TourId" class="ap-status @(item.IsStatus ? "status-live" : "status-draft")">
+                            <i class="bi bi-circle-fill" style="font-size: 8px;"></i>
+                            @(item.IsStatus ? "Aktif" : "Pasif")
                         </a>
                     </td>
+
                     <td class="text-end pe-4">
                         <div class="btn-group">
-                            <a href="/AdminTour/AddImage/@item.TourId" class="btn btn-sm btn-outline-secondary" title="Resim Ekle"><i class="bi bi-image"></i></a>
                             <a href="/AdminTour/UpdateTour/@item.TourId" class="btn btn-sm btn-outline-primary" title="Düzenle"><i class="bi bi-pencil"></i></a>
-                            <a href="/AdminTour/DeleteTour/@item.TourId" class="btn btn-sm btn-outline-danger" onclick="return confirm('Silmek istediğine emin misin?')" title="Sil"><i class="bi bi-trash"></i></a>
+                            <a href="/AdminTour/AddImage/@item.TourId" class="btn btn-sm btn-outline-info" title="Resimler"><i class="bi bi-image"></i></a>
+                            <a href="/AdminTour/DeleteTour/@item.TourId" class="btn btn-sm btn-outline-danger" title="Sil" onclick="return confirm('Silmek istediğinize emin misiniz?')"><i class="bi bi-trash"></i></a>
                         </div>
                     </td>
                 </tr>
@@ -261,7 +271,24 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // 1. ÖZEL FİLTRELEME: Fiyat aralığı için DataTables'a kural ekliyoruz
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                // Input ID'si senin kodunda priceFilter, o yüzden buradan çekiyoruz
+                var max = parseInt($('#priceFilter').val(), 10);
+
+                // Tablodaki 2. indexli sütun (Fiyat). ₺ ve . karakterlerini silip sayıya çeviriyoruz.
+                var price = parseFloat(data[3].replace(/[^\d]/g, '')) || 0;
+
+                if (isNaN(max) || price <= max) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
         $(document).ready(function () {
+            // Tabloyu başlat
             var table = $('#tourTable').DataTable({
                 "paging": true,
                 "lengthChange": true,
@@ -277,45 +304,48 @@
                 "dom": '<"row px-4 py-3 align-items-center"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row px-4 py-3 align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             });
 
+            // İsim Filtresi
             $("#nameFilter").on("keyup", function () {
                 table.column(0).search(this.value).draw();
             });
 
-                    $("#categoryFilter").on("change", function () {
-            var val = $(this).val().trim(); // Seçilen değerin boşluklarını temizle
+                    // Kategori Filtresi Kısmı
+                // Kategori Dropdown Değiştiğinde
+        $("#categoryFilter").on("change", function () {
+            var val = $(this).val();
 
             if (val === "") {
-                // Eğer "Tüm Kategoriler" seçildiyse filtreyi tamamen temizle
+                // Eğer "Tüm Kategoriler" seçilirse filtreyi temizle
                 table.column(1).search('').draw();
             } else {
-                // 'true, false' ayarları sayesinde tam kelime değil,
-                // "içinde bu geçiyor mu?" diye bakıyoruz.
-                // Bu sayede "Kültür Turu" yazsa bile "Kültür" seçince bulur.
-                table.column(1)
-                     .search(val, false, false)
-                     .draw();
+                // Sadece Kategori sütununda (index 1) tam eşleşme ara
+                // regex: true ve smart: false yaparak tam metni aratıyoruz
+                table.column(1).search(val).draw();
             }
         });
+            // Fiyat Filtresi Tetikleyici
             $('#priceFilter').on('keyup change', function () {
                 table.draw();
             });
 
+            // Filtreleri Sıfırla
             $("#resetFilters").click(function () {
-                $("#nameFilter, #priceFilter").val("");
+                $("#nameFilter, #priceFilter, #categoryFilter").val("");
                 $("#categoryFilter").val("");
                 table.search('').columns().search('').draw();
             });
 
+            // Başarı Mesajı
             @if (TempData["SuccessMessage"] != null)
             {
-                        <text>
-                        Swal.fire({
-                            title: 'Başarılı!',
-                            text: '@TempData["SuccessMessage"]',
-                            icon: 'success',
-                            confirmButtonColor: '#4f46e5'
-                        });
-                        </text>
+                    <text>
+                    Swal.fire({
+                        title: 'Başarılı!',
+                        text: '@TempData["SuccessMessage"]',
+                        icon: 'success',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                    </text>
             }
         });
     </script>
