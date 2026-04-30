@@ -134,7 +134,7 @@ Destinasyon sekmesi sayesinde tura ait genel(ülke)bilgileri,kapasite bilgileri 
 ### <img width="1910" height="915" alt="screencapture-localhost-7206-Destination-CreateDestination-2026-04-30-21_06_35" src="https://github.com/user-attachments/assets/6505eb42-c02b-41d5-aaec-c4c1d5b150b4" />
 
 ### <img width="1910" height="915" alt="screencapture-localhost-7206-Review-ReviewList-2026-04-30-21_10_19" src="https://github.com/user-attachments/assets/812284ba-7830-4efa-8545-0d5d393dbbdc" />
-Tura gelen yorumlar burada listelenir.Adminden onay bekleyenler ve aktif yorumalr olarak.
+Tura gelen yorumlar burada listelenir.Adminden onay bekleyenler ve aktif yorumlar olarak.
 
 ### <img width="1890" height="905" alt="ayarlarSayfasi" src="https://github.com/user-attachments/assets/20834d2f-0aab-46a3-81f8-ad13f3b6defa" />
 Ayarlar sayfasıdır.Dil değişimi(ayarlar+sidebar dahil)yapılabilir.
