@@ -18,9 +18,17 @@
                     <p class="text-white text-opacity-75 m-0 small">Tur rotalarını ve lokasyon bilgilerini buradan yönetin.</p>
                 </div>
             </div>
-            <a href="/Destination/CreateDestination" class="btn btn-light fw-bold rounded-3 px-4 py-2 shadow-sm">
-                <i class="bi bi-plus-lg me-2"></i>Yeni Rota Ekle
-            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/Destination/ExportToExcel" class="btn btn-success fw-bold rounded-3 px-3 py-2 shadow-sm">
+                    <i class="bi bi-file-earmark-excel me-1"></i> Excel Raporu
+                </a>
+                <a href="/Destination/ImportFromTours" class="btn btn-warning fw-bold rounded-3 px-3 py-2 shadow-sm">
+                    <i class="bi bi-arrow-repeat me-1"></i> Turlardan Veri Çek
+                </a>
+                <a href="/Destination/CreateDestination" class="btn btn-light fw-bold rounded-3 px-4 py-2 shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Rota Ekle
+                </a>
+            </div>
         </div>
     </div>
 
@@ -61,8 +69,9 @@
                                     <a href="/Destination/UpdateDestination/@item.DestinationId" class="btn btn-sm btn-outline-primary rounded-3 me-2">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a href="/Destination/DeleteDestination/@item.DestinationId" class="btn btn-sm btn-outline-danger rounded-3"
-                                       onclick="return confirm('Bu rotayı silmek istediğinize emin misiniz?')">
+                                    <a href="javascript:void(0)"
+                                       onclick="deleteDestination('@item.DestinationId')"
+                                       class="btn btn-sm btn-outline-danger rounded-3">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </td>
@@ -76,27 +85,93 @@
 </div>
 
 <style>
-    .btn-icon {
-        width: 38px;
-        height: 38px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 10px;
-        transition: all 0.2s;
+    /*Tüm sayfa yapısını dikeyde ekranı kaplayacak şekilde zorla */
+    html, body {
+        height: 100%;
+        margin: 0;
     }
 
-        .btn-icon:hover {
-            transform: translateY(-2px);
-            background: #f8fafc;
-        }
-
-    .table tbody tr {
-        transition: all 0.2s ease;
-        cursor: default;
+    /* Ana içerik alanını (sağ tarafı) sidebar ile aynı boya getir */
+    .container-fluid.pt-4.px-4 {
+        min-height: calc(100vh - 20px); /* Üstteki boşluğu hesaba katarak tam ekran boyu */
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 20px; /* En altta sidebar ile sıfırlanması için */
     }
 
-        .table tbody tr:hover {
-            background-color: #f8faff !important;
-        }
+    /* Tablo Kartını (Liste Kartı) aşağı doğru esnet */
+    .card.border-0.shadow-sm.rounded-4:last-child {
+        flex: 1; /* Mevcut dikey boşluğun tamamını doldurur */
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0 !important; /* Sidebar ile hizayı bozmaması için alttaki margin'i sıfırla */
+    }
+
+    /* Kartın içeriğini (tabloyu) kartın içine yay */
+    .card-body.p-0 {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* DataTables wrapper'ını en alta kadar uzat */
+    .dataTables_wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Tabloyu orta, pagination'ı en alta iter */
+        padding: 20px !important;
+    }
+
+    /* Tablo alanı çok yer kaplaması için */
+    .table-responsive {
+        flex: 1;
+    }
 </style>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // jQuery Çakışmasını Engellemek İçin Özel Değişken
+    var $dt = jQuery.noConflict(true);
+
+    $dt(document).ready(function () {
+        // DataTables Kurulumu
+        if ($dt.fn.DataTable.isDataTable('.table')) {
+            $dt('.table').DataTable().destroy(); // Varsa önce eskisini öldür
+        }
+
+        $dt('.table').DataTable({
+            "pageLength": 10,
+            "lengthMenu": [10, 25, 50],
+            "ordering": true,
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+            },
+            "dom": '<"d-flex justify-content-between align-items-center mb-3"lf>rt<"d-flex justify-content-between align-items-center mt-3"ip>'
+        });
+    });
+
+    // Silme Fonksiyonu (SweetAlert)
+    function deleteDestination(id) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu rotayı sildiğinizde geri alamazsınız!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Vazgeç',
+            customClass: { popup: 'rounded-4' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Destination/DeleteDestination/" + id;
+            }
+        });
+    }
+</script>
